@@ -10,10 +10,10 @@ const graceFullShutdown = async (signal) => {
     try {
         logger.info(`${signal} received. Starting gracefull shutdown`);
 
-        if(server){
-            serer.close(() => {
+        if (httpServer) {
+            httpServer.close(() => {
                 logger.info("HTTP server closed");
-            })
+            });
         }
 
         await disconnectDB();
@@ -22,52 +22,40 @@ const graceFullShutdown = async (signal) => {
 
         process.exit(0);
     } catch (error) {
-        logger.fatal({err: error},"Error during gracefull shutdown");
+        logger.fatal({ err: error }, "Error during gracefull shutdown");
 
         process.exit(1);
     }
-}
+};
 
-process.on(
-    "unhandledRejection",
-    (error) => {
-        logger.error({err: error},"Unhandled rejection");
-        
-        process.exit(1);
-    }
-)
+process.on("unhandledRejection", (error) => {
+    logger.error({ err: error }, "Unhandled rejection");
 
-process.on(
-    "uncaughtException",
-    (error) => {
-        logger.error({err: error},"Uncaught exception");
-        
-        process.exit(1);
-    }
-)
+    process.exit(1);
+});
 
-process.on(
-    "SIGINT",
-    () => graceFullShutdown("SIGINT")
-)
+process.on("uncaughtException", (error) => {
+    logger.error({ err: error }, "Uncaught exception");
 
-process.on(
-    "SIGTERM",
-    () => graceFullShutdown("SIGTERM")
-)
+    process.exit(1);
+});
+
+process.on("SIGINT", () => graceFullShutdown("SIGINT"));
+
+process.on("SIGTERM", () => graceFullShutdown("SIGTERM"));
 
 const startServer = async () => {
     try {
         await connectDB();
 
-        const server = app.listen(env.PORT, () => {
-            logger.info(`App listening on port ${env.PORT}`);  
-        })
+        httpServer = app.listen(env.PORT, () => {
+            logger.info(`App listening on port ${env.PORT}`);
+        });
     } catch (error) {
-        logger.error({err: error},"Server startup failed");
-                
+        logger.error({ err: error }, "Server startup failed");
+
         process.exit(1);
     }
-}
+};
 
 startServer();

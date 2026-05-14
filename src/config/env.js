@@ -42,6 +42,36 @@ const envSchema = z
                 invalid_type_error: "DB_MAX_POOL_SIZE must be a valid number",
             })
             .min(1, "DB_MAX_POOL_SIZE size can not be empty"),
+
+        BCRYPT_SALT_ROUNDS: z.coerce
+            .number({
+                invalid_type_error: "BCRYPT_SALT_ROUNDS must be a valid number",
+            })
+            .min(5, "BCRYPT_SALT_ROUNDS must be at least 5"),
+
+        ACCESS_TOKEN_SECRET: z
+            .string({
+                required_error: "ACCESS_TOKEN_SECRET is required"
+            })
+            .min(32, "ACCESS_TOKEN_SECRET must be at least 32 character"),
+        
+        ACCESS_TOKEN_EXPIRY: z
+            .string({
+                required_error: "ACCESS_TOKEN_EXPIRY is required"
+            })
+            .min(1, "ACCESS_TOKEN_EXPIRY can not be empty"),
+
+        REFRESH_TOKEN_SECRET: z
+            .string({
+                required_error: "REFRESH_TOKEN_SECRET is required"
+            })
+            .min(32, "REFRESH_TOKEN_SECRET must be at least 32 character"),
+
+        REFRESH_TOKEN_EXPIRY: z
+            .string({
+                required_error: "REFRESH_TOKEN_EXPIRY is required"
+            })
+            .min(1, "REFRESH_TOKEN_EXPIRY can not be empty"),
     })
     .refine((data) => data.DB_MIN_POOL_SIZE <= data.DB_MAX_POOL_SIZE, {
         message: "DB_MIN_POOL_SIZE cannot be greater than DB_MAX_POOL_SIZE",

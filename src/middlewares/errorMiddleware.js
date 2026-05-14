@@ -1,8 +1,8 @@
 import logger from "../utils/logger.js";
 import env from "../config/env.js";
 
-const errorMiddleware = (error, req, res, next) => {
-    const statusCode = req.statusCode || 500;
+const errorMiddleware = (error, req, res) => {
+    const statusCode = error.statusCode || 500;
 
     logger.error(
         {
@@ -28,9 +28,8 @@ const errorMiddleware = (error, req, res, next) => {
 
     if (env.NODE_ENV === "development") response.stack = error.stack;
 
-    res.statusCode(statusCode).json(response);
+    res.status(statusCode).json(response);
 
-    next();
 };
 
 export default errorMiddleware;

@@ -17,6 +17,8 @@ export const registerUser = async ({ name, email, password }) => {
         password: password,
     });
 
+    await user.save();
+
     return user;
 };
 
@@ -27,7 +29,7 @@ export const loginUser = async ({ email, password }) => {
         throw new AppError("User does not exist", 404);
     }
 
-    const isPasswordCorrect = user.comparePassword(password);
+    const isPasswordCorrect = await user.comparePassword(password);
 
     if (!isPasswordCorrect) {
         throw new AppError("Invalid credentials", 401);

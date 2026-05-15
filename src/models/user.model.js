@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import env from "../config/env.config.js";
 
 const { Schema } = mongoose;
 
@@ -34,14 +35,16 @@ const userSchema = new Schema({
     versionKey: false
 });
 
-export const User = mongoose.model("User", userSchema);
 
 userSchema.pre("save", async function () {
     if(!this.isModified("password")) return;
-
-    this.password= await bcrypt.hash(this.password,10);
+    
+    this.password= await bcrypt.hash(this.password,env.BCRYPT_SALT_ROUNDS);
 });
 
 userSchema.methods.comparePassword = async function (password){
-    return await bcrypt.compare(password, this.password);
+    const result = await bcrypt.compare(password, this.password);
+    return result;
 };
+
+export const User = mongoose.model("User", userSchema);

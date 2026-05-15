@@ -1,7 +1,7 @@
 import env from "../config/env.config.js";
 
 const setAuthCookies = (res, accessToken) => {
-    res.cookies(
+    res.cookie(
         "accessToken", 
         accessToken,
         {

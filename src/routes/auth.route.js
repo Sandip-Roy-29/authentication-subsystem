@@ -12,7 +12,7 @@ import { loginSchema } from "../validations/auth.validation.js";
 
 // Middlewares
 import validateMiddleware from "../middlewares/validate.middleware.js";
-import { authMiddleware } from "../middlewares/auth.middleware.js";
+import authMiddleware from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 

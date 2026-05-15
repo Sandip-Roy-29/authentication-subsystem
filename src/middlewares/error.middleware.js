@@ -2,9 +2,9 @@
 import logger from "../utils/logger.util.js";
 
 // Configs
-import env from "../config/env.js";
+import env from "../config/env.config.js";
 
-const errorMiddleware = (error, req, res) => {
+const errorMiddleware = (error, req, res, next) => {
     const statusCode = error.statusCode || 500;
 
     logger.error(

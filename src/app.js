@@ -1,5 +1,6 @@
 // packages
 import express from "express";
+import cookieParser from "cookie-parser";
 
 //Routes
 import healthRoute from "../src/routes/health.route.js";
@@ -17,6 +18,7 @@ const app = express();
 app.use(express.json());
 app.use(requestIdMiddleware);
 app.use(requestLoggerMiddleware);
+app.use(cookieParser());
 
 app.use("/health", healthRoute);
 app.use("/api/v1/auth", authRoute);

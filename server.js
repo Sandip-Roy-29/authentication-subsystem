@@ -1,8 +1,13 @@
+// Configs
 import app from "./src/app.js";
-import env from "./src/config/env.js";
+import env from "./src/config/env.config.js";
+
+// Database
 import connectDB from "./src/db/connectDB.js";
 import disconnectDB from "./src/db/disconnectDB.js";
-import logger from "./src/utils/logger.js";
+
+// Utils
+import logger from "./src/utils/logger.util.js";
 
 let httpServer;
 

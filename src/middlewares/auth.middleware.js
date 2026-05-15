@@ -2,7 +2,7 @@
 import jwt from "jsonwebtoken";
 
 // Configs
-import env from "../config/env.js";
+import env from "../config/env.config.js";
 
 // Utils
 import AppError from "../utils/AppError.util.js";

@@ -22,7 +22,11 @@ export const registerSchema = z.object({
                 required_error: "Password is required",
             })
             .min(8, "Password must be at least 8 character")
-            .max(128, "Password cannot exceed 120 character"),
+            .max(128, "Password cannot exceed 120 character")
+            .regex(
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{8,}$/,
+                "Password must contain 1 uppercase, 1 lowercase, 1 number, and 1 special character"
+            ),
     }),
 });
 
@@ -41,6 +45,10 @@ export const loginSchema = z.object({
                 required_error: "Password is required",
             })
             .min(8, "Password must be at least 8 character")
-            .max(128, "Password cannot exceed 120 character"),
+            .max(128, "Password cannot exceed 120 character")
+            .regex(
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{8,}$/,
+                "Password must contain 1 uppercase, 1 lowercase, 1 number, and 1 special character"
+            ),
     }),
 });

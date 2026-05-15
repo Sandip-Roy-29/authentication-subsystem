@@ -1,6 +1,6 @@
-import logger from "../utils/logger.js";
+import logger from "../utils/logger.util.js";
 
-const requestLogger = (req, res, next) => {
+const requestLoggerMiddleware = (req, res, next) => {
     const start = Date.now();
 
     res.on("finish", () => {
@@ -28,4 +28,4 @@ const requestLogger = (req, res, next) => {
     next();
 };
 
-export default requestLogger;
+export default requestLoggerMiddleware;

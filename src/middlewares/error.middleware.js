@@ -1,4 +1,7 @@
-import logger from "../utils/logger.js";
+// Utils
+import logger from "../utils/logger.util.js";
+
+// Configs
 import env from "../config/env.js";
 
 const errorMiddleware = (error, req, res) => {

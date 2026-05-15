@@ -1,6 +1,6 @@
-import env from "../config/env.js";
+import env from "../config/env.config.js";
 
-export const setAuthCookies = (res, accessToken) => {
+const setAuthCookies = (res, accessToken) => {
     res.cookies(
         "accessToken", 
         accessToken,
@@ -12,3 +12,5 @@ export const setAuthCookies = (res, accessToken) => {
         }
     );
 };
+
+export default setAuthCookies;

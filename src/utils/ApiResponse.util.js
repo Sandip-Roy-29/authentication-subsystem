@@ -16,9 +16,9 @@ class ApiResponse {
     }
 
     static success(
-        data = null, 
-        message = "Success", 
-        meta = {}, 
+        data = null,
+        message = "Success",
+        meta = {},
         requestId = null
     ) {
         return new ApiResponse({

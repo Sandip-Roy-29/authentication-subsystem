@@ -1,18 +1,26 @@
+// packages
 import express from "express";
+
+//Routes
 import healthRoute from "../src/routes/health.route.js";
-import requestLogger from "./middlewares/requestLogger.js";
-import errorMiddleware from "./middlewares/errorMiddleware.js";
-import requestIdMiddleware from "./middlewares/requestIdMiddleware.js";
 import authRoute from "./routes/auth.route.js";
+import meRoute from "./routes/me.route.js";
+
+// Middlewares
+import requestLoggerMiddleware from "./middlewares/requestLogger.middleware.js";
+import errorMiddleware from "./middlewares/error.middleware.js";
+import requestIdMiddleware from "./middlewares/requestId.middleware.js";
+import authMiddleware from "./middlewares/auth.middleware.js";
 
 const app = express();
 
 app.use(express.json());
 app.use(requestIdMiddleware);
-app.use(requestLogger);
+app.use(requestLoggerMiddleware);
 
 app.use("/health", healthRoute);
-app.use("/api/v1/auth",authRoute);
+app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/me", authMiddleware, meRoute);
 
 app.use(errorMiddleware);
 

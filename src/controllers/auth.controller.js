@@ -1,58 +1,70 @@
+// Configs
+import env from "../config/env.config.js";
+
+// Services
 import { registerUser } from "../services/auth.services.js";
 import { loginUser } from "../services/auth.services.js";
-import ApiResponse from "../utils/ApiResponse.js";
-import { generateAccessToken } from "../utils/generateTokens.js";
-import { setAuthCookies } from "../utils/setAuthCookies.js";
 
-export const registerController = async (req, res, next) => {
-    try {
-        const { name, email, password } = req.body;
-    
-        const user = await registerUser({ name, email, password });
+// Utils
+import ApiResponse from "../utils/ApiResponse.util.js";
+import { generateAccessToken } from "../utils/generateTokens.util.js";
+import setAuthCookies from "../utils/setAuthCookies.util.js";
 
-        const accessToken = generateAccessToken(user);
+export const registerController = async (req, res) => {
+    const { name, email, password } = req.body;
 
-        setAuthCookies(res, accessToken);
-    
-        return res.status(201).json(
-            ApiResponse.created({
-                data:{
-                    id: user._id,
-                    name: user.name,
-                    email: user.email
-                },
-                message: "User registered successfully",
-                requestId: req.requestId,
-            })
-        );
-    } catch (error) {
-        next(error);
-    }
+    const user = await registerUser({ name, email, password });
+
+    const accessToken = generateAccessToken(user);
+
+    setAuthCookies(res, accessToken);
+
+    return res.status(201).json(
+        ApiResponse.created({
+            data: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+            },
+            message: "User registered successfully",
+            requestId: req.requestId,
+        })
+    );
 };
 
-export const loginController = async (req, res, next) => {
-    try {
-        const { email, password } = req.body;
-        
-        const user = await loginUser({ email, password });
+export const loginController = async (req, res) => {
+    const { email, password } = req.body;
 
-        const accessToken = generateAccessToken(user);
+    const user = await loginUser({ email, password });
 
-        setAuthCookies(res, accessToken);
+    const accessToken = generateAccessToken(user);
 
-        return res.status(200).json(
-            ApiResponse.success({
-                data:{
-                    id: user._id,
-                    name: user.name,
-                    email: user.email
-                },
-                message: "User logged in successfully",
-                requestId: req.requestId,
-            })
-        );
+    setAuthCookies(res, accessToken);
 
-    } catch (error) {
-        next(error);
-    }
+    return res.status(200).json(
+        ApiResponse.success({
+            data: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+            },
+            message: "User logged in successfully",
+            requestId: req.requestId,
+        })
+    );
+};
+
+export const logoutController = (req, res) => {
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: env.NODE_ENV === "production",
+        sameSite: "strict",
+    });
+
+    res.status(200).json(
+        ApiResponse.success({
+            message: "Logged out successfully",
+            requestId: req.requestId,
+        })
+    );
 };

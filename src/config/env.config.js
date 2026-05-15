@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { z } from "zod";
-import logger from "../utils/logger.js";
+import logger from "../utils/logger.util.js";
 
 dotenv.config({
     path: `.env.${process.env.NODE_ENV || "development"}`,

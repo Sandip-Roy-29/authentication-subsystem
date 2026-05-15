@@ -1,8 +1,13 @@
+// Packages
 import jwt from "jsonwebtoken";
-import env from "../config/env.js";
-import AppError from "../utils/AppError.js";
 
-export const authMiddleware = (req, _, next) => {
+// Configs
+import env from "../config/env.js";
+
+// Utils
+import AppError from "../utils/AppError.util.js";
+
+const authMiddleware = (req, _, next) => {
     try {
         const incomingAccessToken = req.cookies?.accessToken;
 
@@ -25,3 +30,5 @@ export const authMiddleware = (req, _, next) => {
         next(error);
     }
 };
+
+export default authMiddleware;

@@ -1,14 +1,25 @@
+import { ZodError } from "zod";
+import AppError from "../utils/AppError.util.js";
+
 const validateMiddleware = (schema) => {
     return async (req, res, next) => {
         try {
             await schema.parseAsync({
                 body: req.body,
                 query: req.query,
-                params: req.params
+                params: req.params,
             });
 
             next();
         } catch (error) {
+            if (error instanceof ZodError) {
+                return next(
+                    new AppError(
+                        error.issues[0]?.message || "Validation failed",
+                        400
+                    )
+                );
+            }
             next(error);
         }
     };

@@ -6,6 +6,7 @@ export const registerSchema = z.object({
             .string({
                 required_error: "Name is required",
             })
+            .regex(/^[A-Za-z\s]+$/, "Name can only contain letters and spaces")
             .min(3, "Name must be atleast 3 character")
             .max(50, "Name cannot exceed 50 character"),
 

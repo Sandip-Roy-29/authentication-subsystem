@@ -42,9 +42,10 @@ Designed with security best practices in mind.
 ```bash
 auth-system/
 │
+│
 ├── src/
 │   ├── config/
-│   │   └── env.js
+│   │   └── env.config.js
 │   │
 │   ├── db/
 │   │   └── connectDB.js
@@ -55,27 +56,59 @@ auth-system/
 │   │   └── architecture.md
 │   │
 │   ├── controllers/
+│   │   └── auth.controller.js
 │   │
-│   ├── middleware/
+│   ├── middlewares/
+│   │   └── auth.middleware.js
+│   │   └── error.middleware.js
+│   │   └── requestId.middleware.js
+│   │   └── requestLogger.middleware.js
+│   │   └── validate.middleware.js
 │   │
 │   ├── models/
+│   │   └── user.model.js
 │   │
 │   ├── routes/
+│   │   └── auth.route.js
 │   │   └── health.route.js
+│   │   └── me.route.js
+│   │
+│   ├── services/
+│   │   └── auth.services.js
 │   │
 │   ├── utils/
-│   │   └── logger.js
+│   │   └── ApiResponse.util.js
+│   │   └── AppError.js
+│   │   └── generateTokens.util.js
+│   │   └── logger.util.js
+│   │   └── setAuthCookies.util.js
 │   │
+│   ├── validation/
+│   │   └── auth.validation.js
 │   │
 │   └── app.js
 │
+├── server.js
+│
+├── tests/
+│   ├── integration/
+│   │   └── auth.test.js
+│   └── setup.js
+│
+├── .env.example
 ├── .env.development
 ├── .env.production
 ├── .env.test
+├── .eslintignore
+├── .nvmrc
+├── .prettierrc
+├── .prettierignore
+├── .commitlint.config.js
+├── .eslint.config.js
+├── jest.config.js
 ├── .gitignore
 ├── .package-lock.json
 ├── package.json
-├── server.js
 ├── README.md
 └── LICENSE
 ```
@@ -86,9 +119,10 @@ auth-system/
 
 | Method | Route | Description |
 |---|---|---|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Login user |
-| POST | `/api/auth/logout` | Logout user |
+| POST | `/api/v1/auth/register` | Register new user |
+| POST | `/api/v1/auth/login` | Login user |
+| POST | `/api/v1/auth/logout` | Logout user |
+| GET | `/api/v1/me` | Return authenticated user |
 | GET | `/health` | Health check route |
 
 
@@ -119,11 +153,19 @@ PORT=5000
 MONGODB_URI=mongodb://localhost:27017/auth-system
 
 # JWT secret key
-JWT_SECRET=your_super_secret_jwt_key
+ACCESS_TOKEN_SECRET=your_secret_key
+ACCESS_TOKEN_EXPIRY=15m
+
+REFRESH_TOKEN_SECRET=your_secret_key
+REFRESH_TOKEN_EXPIRY=7d
 
 # MongoDB connection pool settings
 DB_MIN_POOL_SIZE=0
 DB_MAX_POOL_SIZE=10
+
+# Bcrypt sault rounds
+BCRYPT_SALT_ROUNDS=10
+
 ```
 
 ---
@@ -172,4 +214,4 @@ npm run dev
 ## License
 
 This project is licensed under the MIT License.  
-See the [LICENSE](../../LICENSE) file for details.
+See the [LICENSE](./LICENSE) file for details.

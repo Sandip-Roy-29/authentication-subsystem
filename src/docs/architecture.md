@@ -1,64 +1,130 @@
-## Architecture
+## System Overview
 
-This subsystem follows a layered architecture:
+The authentication subsystem follows a layered architecture:
 
-- **Routes** handle API endpoints
-- **Controllers** manage business logic
-- **Models** interact with the database
-- **Middleware** handles authentication and validation
-- **Utilities** contain reusable helper functions
+Client Request
+→ Middleware Layer
+→ Controller Layer
+→ Service Layer
+→ Model Layer
+→ Database
+→ Response
 
----
+## Request Lifecycle
+
+1. Request enters Express app
+2. Request ID middleware attaches unique ID
+3. Logger middleware logs request metadata
+4. Validation middleware validates input using Zod
+5. Controller handles request
+6. Service executes business logic
+7. Model interacts with MongoDB
+8. Response sent using ApiResponse
+9. Errors handled by centralized error middleware
 
 ## Authentication Flow
 
-### Register
+### Registration Flow
+User → Controller → Service → Hash Password → Store in DB → Generate JWT access token → Set HTTP-only secure cookie -> Send response
 
-- User submits username, email, password, and confirm password
-- Input validation is performed
-- Password is hashed using bcrypt
-- User data is stored in MongoDB
-- JWT token is generated
-- Token stored in HTTP-only cookies
-- User automatically logged in
+### Login Flow
+User → Validate credentials → Compare password → Generate JWT access token → Set HTTP-only secure cookie -> Send response
 
-### Validation Rules
+### Protected Route Flow (/me)
+Request → Cookie extraction → JWT verification → Attach user → Allow access
 
-#### Username
-- Must be between 3–30 characters
-- Numbers allowed
-- Spaces allowed
+### Logout Flow
+Clear HTTP-only cookie → End session
 
-#### Password
-- Minimum 8 characters
-- Must contain:
-  - One uppercase letter
-  - One lowercase letter
-  - One number
-  - One special character
+## Middleware Pipeline
 
-#### Email
-- Must be a valid email format
+The request passes through multiple middleware layers:
 
-#### Confirm Password
-- Used only for validation
-- Not stored in database
+- Request ID Middleware → assigns unique request ID
+- Logger Middleware → logs request/response
+- Validation Middleware → validates request using Zod
+- Auth Middleware → verifies JWT token
+- Error Middleware → handles all application errors
 
----
+## Folder Responsibilities
 
-### Login
+### controllers/
+Handle HTTP request/response lifecycle
 
-- User submits email and password
-- System checks whether the email exists
-- Password compared with hashed password
-- New JWT token generated
-- User redirected to dashboard
+### services/
+Contain business logic (authentication logic)
 
----
+### models/
+MongoDB schemas and database operations
 
-### Logout
+### middlewares/
+Request processing layers (auth, validation, logging, error handling)
 
-- JWT cookie removed
-- User loses access to protected routes
+### utils/
+Reusable helpers (JWT, cookies, logger, error classes)
 
----
+### config/
+Environment and configuration management
+
+### routes/
+API route definitions
+
+### validation/
+Validate user input(auth)
+
+### db/
+Database connection(connectDB, disconnectDB)
+
+## Error Handling Strategy
+
+The system uses centralized error handling:
+
+- AppError for operational errors
+- Central error middleware for response formatting
+- Validation errors handled by Zod middleware
+- Unexpected errors treated as 500 internal server errors
+
+## Security Design
+
+- Passwords hashed using bcrypt
+- JWT stored in HTTP-only cookies
+- No token stored in localStorage
+- Input validation using Zod
+- Environment variable validation using schema
+- Secure middleware-based route protection
+
+## Data Flow
+
+Client → Express → Middleware → Controller → Service → MongoDB → Response
+
+## Design Decisions
+
+- JWT stored in HTTP-only cookies for security
+- Layered architecture for separation of concerns
+- Zod used for request validation
+- Centralized error handling for consistency
+- Request ID used for traceability
+
+## Why Service Layer Exists
+
+The service layer isolates business logic from controllers.
+
+Benefits:
+- Keeps controllers thin
+- Improves reusability
+- Makes testing easier
+- Separates HTTP concerns from business logic
+
+## Express 5 Error Handling
+
+Express 5 automatically forwards async errors to the error middleware.
+Because of this, a custom asyncHandler wrapper is not required.
+
+## Current Limitations
+
+- No refresh token rotation
+- No email verification
+- No CSRF protection
+- No rate limiting
+- No RBAC system
+- No session management

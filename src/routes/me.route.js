@@ -6,7 +6,7 @@ router.get("/", (req, res) => {
     return res.status(200).json({
         success: true,
         data: {
-            id: req.user.sub,
+            id: req.user._id,
             email: req.user.email,
         },
         requestId: req.requestId,

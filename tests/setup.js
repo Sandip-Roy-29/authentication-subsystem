@@ -1,14 +1,17 @@
 import mongoose from "mongoose";
 import env from "../src/config/env.config";
-import { beforeAll, afterAll, afterEach } from "@jest/globals";
+import { beforeAll, afterAll, afterEach, jest } from "@jest/globals";
 import { User } from "../src/models/user.model.js";
 
+// Increase default timeout for DB hooks
+jest.setTimeout(30000);
+
 beforeAll(async () => {
-    mongoose.connect(env.MONGODB_URI);
+    await mongoose.connect(env.MONGODB_URI);
 });
 
 afterAll(async () => {
-    mongoose.connection.close();
+    await mongoose.connection.close();
 });
 
 afterEach(async () => {

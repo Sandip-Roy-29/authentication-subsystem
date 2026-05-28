@@ -1,9 +1,9 @@
 import env from "../config/env.config.js";
 
-const setAuthCookies = (res, accessToken) => {
+const setAuthCookies = (res, refreshToken) => {
     res.cookie(
-        "accessToken", 
-        accessToken,
+        "refreshToken",
+        refreshToken,
         {
             httpOnly: true,
             secure: env.NODE_ENV === "production",

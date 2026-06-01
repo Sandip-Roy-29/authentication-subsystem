@@ -1,5 +1,6 @@
 // Configs
 import env from "../config/env.config.js";
+import redisClient from "../config/redis.config.js";
 
 // Services
 import { registerUser } from "../services/auth.services.js";
@@ -58,7 +59,17 @@ export const logoutController = async (req, res) => {
 
     await User.findByIdAndUpdate(userId,{
         $unset: { refreshToken: 1 }
-    });
+    });    
+
+    const remainingTime = req.user.exp - Math.floor(Date.now()/1000);
+
+    await redisClient.set(
+        `blacklist:${req.user.jti}`,
+        "revoked",
+        {
+            EX: remainingTime
+        }
+    );    
 
     res.clearCookie("refreshToken", {
         httpOnly: true,

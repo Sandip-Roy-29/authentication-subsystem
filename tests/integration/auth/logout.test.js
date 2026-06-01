@@ -1,5 +1,3 @@
-// logout.test.js
-
 import request from "supertest";
 import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";

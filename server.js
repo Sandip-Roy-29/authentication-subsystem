@@ -1,6 +1,7 @@
 // Configs
 import app from "./src/app.js";
 import env from "./src/config/env.config.js";
+import redisClient from "./src/config/redis.config.js";
 
 // Database
 import connectDB from "./src/db/connectDB.js";
@@ -21,6 +22,7 @@ const graceFullShutdown = async (signal) => {
             });
         }
 
+        await redisClient.quit();
         await disconnectDB();
 
         logger.info("Database disconnected");
@@ -52,6 +54,7 @@ process.on("SIGTERM", () => graceFullShutdown("SIGTERM"));
 const startServer = async () => {
     try {
         await connectDB();
+        await redisClient.connect();
 
         httpServer = app.listen(env.PORT, () => {
             logger.info(`App listening on port ${env.PORT}`);

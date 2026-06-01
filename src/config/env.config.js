@@ -73,6 +73,12 @@ const envSchema = z
             })
             .min(1, "REFRESH_TOKEN_EXPIRY can not be empty")
             .regex(/^\d+[smhd]$/, "Use format like 15m, 1h, 7d"),
+
+        REDIS_URL: z
+            .string({
+                required_error: "REDIS_URL is required",
+            })
+            .url("REDIS_URI must be a valid url")
     })
     .refine((data) => data.DB_MIN_POOL_SIZE <= data.DB_MAX_POOL_SIZE, {
         message: "DB_MIN_POOL_SIZE cannot be greater than DB_MAX_POOL_SIZE",

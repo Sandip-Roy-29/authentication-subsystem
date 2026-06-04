@@ -1,6 +1,9 @@
+// Configs
 import request from "supertest";
 import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
+
+// Helpers
 import { createAuthenticatedUser } from "../../helper/authenticatedUser.helper.js";
 
 describe("Protected routes", () => {
@@ -14,9 +17,7 @@ describe("Protected routes", () => {
         expect(response.statusCode).toBe(200);
         expect(response.body.success).toBe(true);
 
-        expect(response.body.data.email).toBe(
-            user.email.toLowerCase()
-        );
+        expect(response.body.data.email).toBe(user.email.toLowerCase());
     });
 
     test("Should reject /me with invalid token", async () => {
@@ -29,8 +30,7 @@ describe("Protected routes", () => {
     });
 
     test("Should reject /me without token", async () => {
-        const response = await request(app)
-            .get("/api/v1/me");
+        const response = await request(app).get("/api/v1/me");
 
         expect(response.statusCode).toBe(401);
         expect(response.body.success).toBe(false);
@@ -55,6 +55,8 @@ describe("Protected routes", () => {
             .set("Authorization", `Bearer ${accessToken}`);
 
         expect(logoutResponse.statusCode).toBe(200);
-        expect(logoutResponse.headers["set-cookie"][0]).toContain("refreshToken");
+        expect(logoutResponse.headers["set-cookie"][0]).toContain(
+            "refreshToken"
+        );
     });
 });

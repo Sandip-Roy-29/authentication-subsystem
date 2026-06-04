@@ -1,14 +1,17 @@
+// Configs
 import request from "supertest";
 import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
+
+// Helpers
 import { createUserPayload } from "../../helper/createUserPayload.helper.js";
 import { registerUser } from "../../helper/registerUser.helper.js";
 
 describe("Register route", () => {
     test("Should register a user", async () => {
         const user = createUserPayload();
-        
-        const response = await registerUser(user);        
+
+        const response = await registerUser(user);
 
         expect(response.statusCode).toBe(201);
         expect(response.body.success).toBe(true);

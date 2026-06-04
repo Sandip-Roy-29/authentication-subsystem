@@ -1,6 +1,9 @@
+// Configs
 import request from "supertest";
 import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
+
+// Helpers
 import { createUserPayload } from "../../helper/createUserPayload.helper.js";
 import { registerUser } from "../../helper/registerUser.helper.js";
 import { loginUser } from "../../helper/loginUser.helper.js";
@@ -21,7 +24,6 @@ describe("Logout route", () => {
     });
 
     test("Should reject without email", async () => {
-
         const response2 = await request(app).post("/api/v1/auth/login").send({
             email: "",
             password: "Test@123",
@@ -32,7 +34,6 @@ describe("Logout route", () => {
     });
 
     test("Should reject with invalid email", async () => {
-
         const response2 = await request(app).post("/api/v1/auth/login").send({
             email: "invalidemail",
             password: "Test@123",
@@ -59,7 +60,6 @@ describe("Logout route", () => {
     });
 
     test("Should reject without password", async () => {
-
         const response2 = await request(app).post("/api/v1/auth/login").send({
             email: "Test1@gmail.com",
             password: "",

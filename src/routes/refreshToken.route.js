@@ -7,8 +7,16 @@ import { refreshAccessTokenController } from "../controllers/refreshToken.contro
 // Middlewares
 import verifyRefreshToken from "../middlewares/verifyRefreshToken.middleware.js";
 
+// Configs
+import { refreshTokenRateLimiter } from "../config/rateLimit.config.js";
+
 const router = express.Router();
 
-router.post("/", verifyRefreshToken, refreshAccessTokenController);
+router.post(
+    "/",
+    refreshTokenRateLimiter,
+    verifyRefreshToken,
+    refreshAccessTokenController
+);
 
 export default router;

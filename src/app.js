@@ -20,6 +20,7 @@ app.use(express.json());
 app.use(requestIdMiddleware);
 app.use(requestLoggerMiddleware);
 app.use(cookieParser());
+app.set("trust proxy", 1);
 
 app.use("/health", healthRoute);
 app.use("/api/v1/auth", authRoute);

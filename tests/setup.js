@@ -1,8 +1,11 @@
+// Configs
 import mongoose from "mongoose";
 import env from "../src/config/env.config.js";
 import { beforeAll, afterAll, afterEach, jest } from "@jest/globals";
-import { User } from "../src/models/user.model.js";
 import redisClient from "../src/config/redis.config.js";
+
+// Models
+import { User } from "../src/models/user.model.js";
 
 jest.setTimeout(60000);
 
@@ -30,4 +33,5 @@ afterAll(async () => {
 
 afterEach(async () => {
     await User.deleteMany({});
+    await redisClient.flushDb();
 });

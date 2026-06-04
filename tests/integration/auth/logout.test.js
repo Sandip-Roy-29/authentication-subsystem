@@ -1,6 +1,9 @@
+// Configs
 import request from "supertest";
 import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
+
+// Helpers
 import { createAuthenticatedUser } from "../../helper/authenticatedUser.helper.js";
 
 describe("Logout route", () => {
@@ -14,8 +17,7 @@ describe("Logout route", () => {
         expect(response.statusCode).toBe(200);
         expect(response.body.success).toBe(true);
 
-        expect(response.headers["set-cookie"][0])
-            .toContain("refreshToken=");
+        expect(response.headers["set-cookie"][0]).toContain("refreshToken=");
     });
 
     test("Should reject invalid access token", async () => {
@@ -28,8 +30,7 @@ describe("Logout route", () => {
     });
 
     test("Should reject without access token", async () => {
-        const response = await request(app)
-            .post("/api/v1/auth/logout");
+        const response = await request(app).post("/api/v1/auth/logout");
 
         expect(response.statusCode).toBe(401);
         expect(response.body.success).toBe(false);

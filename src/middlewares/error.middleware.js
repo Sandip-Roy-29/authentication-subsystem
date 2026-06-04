@@ -32,7 +32,6 @@ const errorMiddleware = (error, req, res, next) => {
     if (env.NODE_ENV === "development") response.stack = error.stack;
 
     res.status(statusCode).json(response);
-
 };
 
 export default errorMiddleware;

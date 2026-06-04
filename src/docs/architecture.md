@@ -25,15 +25,19 @@ Client Request
 ## Authentication Flow
 
 ### Registration Flow
+
 User → Controller → Service → Hash Password → Store in DB → Generate JWT access token → Set HTTP-only secure cookie -> Send response
 
 ### Login Flow
+
 User → Validate credentials → Compare password → Generate JWT access token → Set HTTP-only secure cookie -> Send response
 
 ### Protected Route Flow (/me)
+
 Request → Cookie extraction → JWT verification → Attach user → Allow access
 
 ### Logout Flow
+
 Clear HTTP-only cookie → End session
 
 ## Middleware Pipeline
@@ -49,30 +53,39 @@ The request passes through multiple middleware layers:
 ## Folder Responsibilities
 
 ### controllers/
+
 Handle HTTP request/response lifecycle
 
 ### services/
+
 Contain business logic (authentication logic)
 
 ### models/
+
 MongoDB schemas and database operations
 
 ### middlewares/
+
 Request processing layers (auth, validation, logging, error handling)
 
 ### utils/
+
 Reusable helpers (JWT, cookies, logger, error classes)
 
 ### config/
+
 Environment and configuration management
 
 ### routes/
+
 API route definitions
 
 ### validation/
+
 Validate user input(auth)
 
 ### db/
+
 Database connection(connectDB, disconnectDB)
 
 ## Error Handling Strategy
@@ -110,6 +123,7 @@ Client → Express → Middleware → Controller → Service → MongoDB → Res
 The service layer isolates business logic from controllers.
 
 Benefits:
+
 - Keeps controllers thin
 - Improves reusability
 - Makes testing easier

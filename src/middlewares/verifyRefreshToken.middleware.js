@@ -23,23 +23,26 @@ const verifyRefreshToken = async (req, _, next) => {
             env.REFRESH_TOKEN_SECRET
         );
 
-        const user = await User.findById(decodedToken.sub).select("+refreshToken.token");
+        const user = await User.findById(decodedToken.sub).select(
+            "+refreshToken.token"
+        );
 
-        if(!user){
+        if (!user) {
             throw new AppError("Unauthorized request", 401);
-        };
+        }
 
-        if(!user.refreshToken || !user.refreshToken.token){
+        if (!user.refreshToken || !user.refreshToken.token) {
             throw new AppError("Refresh token does not exit", 401);
         }
 
-        if(user.refreshToken.expiresAt.getTime() < Date.now()){
+        if (user.refreshToken.expiresAt.getTime() < Date.now()) {
             throw new AppError("Expired refresh token", 401);
-        };
-        
-        const isRefreshTokenValid = await user.compareRefreshToken(incomingRefreshToken);
+        }
 
-        if(!isRefreshTokenValid){
+        const isRefreshTokenValid =
+            await user.compareRefreshToken(incomingRefreshToken);
+
+        if (!isRefreshTokenValid) {
             throw new AppError("Invalid refresh token", 401);
         }
 
@@ -47,7 +50,10 @@ const verifyRefreshToken = async (req, _, next) => {
 
         next();
     } catch (error) {
-        if(error.name === "JsonWebTokenError" || error.name === "TokenExpiredError"){
+        if (
+            error.name === "JsonWebTokenError" ||
+            error.name === "TokenExpiredError"
+        ) {
             return next(new AppError("Invalid or expired token", 401));
         }
         next(error);

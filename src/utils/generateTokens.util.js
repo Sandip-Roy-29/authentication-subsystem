@@ -5,7 +5,7 @@ import crypto from "crypto";
 const payloadBuilder = (user) => ({
     sub: user._id.toString(),
     email: user.email,
-    jti: crypto.randomUUID()
+    jti: crypto.randomUUID(),
 });
 
 export const generateAccessToken = (user) => {

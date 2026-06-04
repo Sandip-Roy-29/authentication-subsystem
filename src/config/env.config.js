@@ -7,10 +7,11 @@ dotenv.config({
 
 const envSchema = z
     .object({
-        NODE_ENV: z.enum(["development", "test", "production"], {
-            required_error: "NODE_ENV is required",
-        })
-        .default("development"),
+        NODE_ENV: z
+            .enum(["development", "test", "production"], {
+                required_error: "NODE_ENV is required",
+            })
+            .default("development"),
 
         PORT: z.coerce
             .number({
@@ -18,6 +19,7 @@ const envSchema = z
             })
             .min(1, "PORT must be greater than 0")
             .max(65535, "PORT must be less than 65535")
+            .int("PORT must be integer")
             .default(3000),
 
         MONGODB_URI: z
@@ -32,6 +34,7 @@ const envSchema = z
             })
             .min(0, "DB_MIN_POOL_SIZE can not be negative")
             .max(50, "DB_MIN_POOL_SIZE must be less than 50")
+            .int("DB_MIN_POOL_SIZE must be integer")
             .default(0),
 
         DB_MAX_POOL_SIZE: z.coerce
@@ -40,13 +43,17 @@ const envSchema = z
             })
             .min(1, "DB_MAX_POOL_SIZE size can not be empty")
             .max(100, "DB_MAX_POOL_SIZE must be less than 100")
+            .int("DB_MAX_POOL_SIZE must be integer")
             .default(10),
 
         BCRYPT_SALT_ROUNDS: z.coerce
             .number({
                 invalid_type_error: "BCRYPT_SALT_ROUNDS must be a valid number",
             })
-            .min(1, "BCRYPT_SALT_ROUNDS must be at least 1"),
+            .int("BCRYPT_SALT_ROUNDS must be integer")
+            .positive("BCRYPT_SALT_ROUNDS must be positive")
+            .min(1, "BCRYPT_SALT_ROUNDS must be at least 1")
+            .max(15, "BCRYPT_SALT_ROUNDS must be less than or equal to 15"),
 
         ACCESS_TOKEN_SECRET: z
             .string({
@@ -78,7 +85,55 @@ const envSchema = z
             .string({
                 required_error: "REDIS_URL is required",
             })
-            .url("REDIS_URI must be a valid url")
+            .url("REDIS_URL must be a valid URL"),
+
+        LOGIN_RATE_LIMIT_WINDOW_MS: z.coerce
+            .number({
+                invalid_type_error:
+                    "LOGIN_RATE_LIMIT_WINDOW_MS must be a valid number",
+            })
+            .positive("LOGIN_RATE_LIMIT_WINDOW_MS must be positive")
+            .int("LOGIN_RATE_LIMIT_WINDOW_MS must be integer"),
+
+        LOGIN_RATE_LIMIT_MAX: z.coerce
+            .number({
+                invalid_type_error:
+                    "LOGIN_RATE_LIMIT_MAX must be a valid number",
+            })
+            .positive("LOGIN_RATE_LIMIT_MAX must be positive")
+            .int("LOGIN_RATE_LIMIT_MAX must be integer"),
+
+        REGISTER_RATE_LIMIT_WINDOW_MS: z.coerce
+            .number({
+                invalid_type_error:
+                    "REGISTER_RATE_LIMIT_WINDOW_MS must be a valid number",
+            })
+            .positive("REGISTER_RATE_LIMIT_WINDOW_MS must be positive")
+            .int("REGISTER_RATE_LIMIT_WINDOW_MS must be integer"),
+
+        REGISTER_RATE_LIMIT_MAX: z.coerce
+            .number({
+                invalid_type_error:
+                    "REGISTER_RATE_LIMIT_MAX must be a valid number",
+            })
+            .positive("REGISTER_RATE_LIMIT_MAX must be positive")
+            .int("REGISTER_RATE_LIMIT_MAX must be integer"),
+
+        REFRESH_RATE_LIMIT_WINDOW_MS: z.coerce
+            .number({
+                invalid_type_error:
+                    "REFRESH_RATE_LIMIT_WINDOW_MS must be a valid number",
+            })
+            .positive("REFRESH_RATE_LIMIT_WINDOW_MS must be positive")
+            .int("REFRESH_RATE_LIMIT_WINDOW_MS must be integer"),
+
+        REFRESH_RATE_LIMIT_MAX: z.coerce
+            .number({
+                invalid_type_error:
+                    "REFRESH_RATE_LIMIT_MAX must be a valid number",
+            })
+            .positive("REFRESH_RATE_LIMIT_MAX must be positive")
+            .int("REFRESH_RATE_LIMIT_MAX must be integer"),
     })
     .refine((data) => data.DB_MIN_POOL_SIZE <= data.DB_MAX_POOL_SIZE, {
         message: "DB_MIN_POOL_SIZE cannot be greater than DB_MAX_POOL_SIZE",

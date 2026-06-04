@@ -4,7 +4,7 @@ class ApiResponse {
         message = "Success",
         data = null,
         meta = {},
-        requestId = null
+        requestId = null,
     }) {
         this.statusCode = statusCode;
         this.message = message;
@@ -19,7 +19,7 @@ class ApiResponse {
         data = null,
         message = "Success",
         meta = {},
-        requestId = null
+        requestId = null,
     }) {
         return new ApiResponse({
             statusCode: 200,
@@ -34,7 +34,7 @@ class ApiResponse {
         data = null,
         message = "Created successfully",
         meta = {},
-        requestId = null
+        requestId = null,
     }) {
         return new ApiResponse({
             statusCode: 201,

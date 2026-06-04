@@ -1,10 +1,13 @@
+// Configs
 import request from "supertest";
 import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
-import { createAuthenticatedUser } from "../../helper/authenticatedUser.helper.js";
 import jwt from "jsonwebtoken";
 import env from "../../../src/config/env.config.js";
 import redisClient from "../../../src/config/redis.config.js";
+
+// Helpers
+import { createAuthenticatedUser } from "../../helper/authenticatedUser.helper.js";
 
 describe("Refresh token route", () => {
     test("Should generate new access token", async () => {

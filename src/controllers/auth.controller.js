@@ -16,16 +16,20 @@ import { User } from "../models/user.model.js";
 export const registerController = async (req, res) => {
     const { name, email, password } = req.body;
 
-    const { user, accessToken, refreshToken } = await registerUser({ name, email, password });
+    const { user, accessToken, refreshToken } = await registerUser({
+        name,
+        email,
+        password,
+    });
     setAuthCookies(res, refreshToken);
-        
+
     return res.status(201).json(
         ApiResponse.created({
             data: {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                accessToken: accessToken
+                accessToken: accessToken,
             },
             message: "User registered successfully",
             requestId: req.requestId,
@@ -36,7 +40,10 @@ export const registerController = async (req, res) => {
 export const loginController = async (req, res) => {
     const { email, password } = req.body;
 
-    const { userResponse, accessToken, refreshToken} = await loginUser({ email, password });
+    const { userResponse, accessToken, refreshToken } = await loginUser({
+        email,
+        password,
+    });
 
     setAuthCookies(res, refreshToken);
 
@@ -57,19 +64,15 @@ export const loginController = async (req, res) => {
 export const logoutController = async (req, res) => {
     const userId = req.user._id;
 
-    await User.findByIdAndUpdate(userId,{
-        $unset: { refreshToken: 1 }
-    });    
+    await User.findByIdAndUpdate(userId, {
+        $unset: { refreshToken: 1 },
+    });
 
-    const remainingTime = req.user.exp - Math.floor(Date.now()/1000);
+    const remainingTime = req.user.exp - Math.floor(Date.now() / 1000);
 
-    await redisClient.set(
-        `blacklist:${req.user.jti}`,
-        "revoked",
-        {
-            EX: remainingTime
-        }
-    );    
+    await redisClient.set(`blacklist:${req.user.jti}`, "revoked", {
+        EX: remainingTime,
+    });
 
     res.clearCookie("refreshToken", {
         httpOnly: true,

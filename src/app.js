@@ -7,6 +7,7 @@ import healthRoute from "../src/routes/health.route.js";
 import authRoute from "./routes/auth.route.js";
 import meRoute from "./routes/me.route.js";
 import refreshTokenRoute from "./routes/refreshToken.route.js";
+import userRoute from "./routes/user.route.js";
 
 // Middlewares
 import requestLoggerMiddleware from "./middlewares/requestLogger.middleware.js";
@@ -26,6 +27,7 @@ app.use("/health", healthRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/me", verifyAccessToken, meRoute);
 app.use("/api/v1/refresh-token", refreshTokenRoute);
+app.use("/api/v1/users", userRoute);
 
 app.use(errorMiddleware);
 

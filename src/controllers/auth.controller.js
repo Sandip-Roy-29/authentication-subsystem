@@ -3,8 +3,7 @@ import env from "../config/env.config.js";
 import redisClient from "../config/redis.config.js";
 
 // Services
-import { registerUser } from "../services/auth.services.js";
-import { loginUser } from "../services/auth.services.js";
+import { loginUser, registerUser } from "../services/auth.services.js";
 
 // Utils
 import ApiResponse from "../utils/ApiResponse.util.js";
@@ -14,12 +13,13 @@ import setAuthCookies from "../utils/setAuthCookies.util.js";
 import { User } from "../models/user.model.js";
 
 export const registerController = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     const { user, accessToken, refreshToken } = await registerUser({
         name,
         email,
         password,
+        role,
     });
     setAuthCookies(res, refreshToken);
 
@@ -29,6 +29,7 @@ export const registerController = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                role: user.role,
                 accessToken: accessToken,
             },
             message: "User registered successfully",
@@ -53,6 +54,7 @@ export const loginController = async (req, res) => {
                 id: userResponse._id,
                 name: userResponse.name,
                 email: userResponse.email,
+                role: userResponse.role,
                 accessToken: accessToken,
             },
             message: "User logged in successfully",

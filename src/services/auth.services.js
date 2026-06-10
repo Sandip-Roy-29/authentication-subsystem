@@ -8,7 +8,7 @@ import {
     generateRefreshToken,
 } from "../utils/generateTokens.util.js";
 
-export const registerUser = async ({ name, email, password }) => {
+export const registerUser = async ({ name, email, password, role }) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -19,6 +19,7 @@ export const registerUser = async ({ name, email, password }) => {
         name: name,
         email: email,
         password: password,
+        role: role || "user",
     });
 
     const accessToken = generateAccessToken(user);
@@ -61,6 +62,7 @@ export const loginUser = async ({ email, password }) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
     };
 
     return { userResponse, accessToken, refreshToken };

@@ -40,6 +40,7 @@ const verifyAccessToken = async (req, _, next) => {
         req.user = {
             _id: decodedToken.sub,
             email: decodedToken.email,
+            role: decodedToken.role,
             exp: decodedToken.exp,
             jti: decodedToken.jti,
         };

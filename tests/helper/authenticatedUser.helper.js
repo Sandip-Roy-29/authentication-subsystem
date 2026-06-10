@@ -2,10 +2,10 @@ import request from "supertest";
 import app from "../../src/app.js";
 import { createUserPayload } from "./createUserPayload.helper.js";
 
-export const createAuthenticatedUser = async () => {
+export const createAuthenticatedUser = async (role) => {
     const agent = request.agent(app);
 
-    const user = createUserPayload();
+    const user = createUserPayload(role);
 
     const response = await agent.post("/api/v1/auth/register").send(user);
 
@@ -16,9 +16,10 @@ export const createAuthenticatedUser = async () => {
     }
 
     return {
+        userId: response.body.data.id,
         user,
         accessToken: response.body.data.accessToken,
-        cookies: response.headers["set-cookie"][0],
+        cookies: response.headers["set-cookie"],
         agent,
     };
 };

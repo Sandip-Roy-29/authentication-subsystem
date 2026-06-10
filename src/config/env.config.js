@@ -134,6 +134,21 @@ const envSchema = z
             })
             .positive("REFRESH_RATE_LIMIT_MAX must be positive")
             .int("REFRESH_RATE_LIMIT_MAX must be integer"),
+        ADMIN_RATE_LIMIT_WINDOW_MS: z.coerce
+            .number({
+                invalid_type_error:
+                    "REFRESH_RATE_LIMIT_WINDOW_MS must be a valid number",
+            })
+            .positive("REFRESH_RATE_LIMIT_WINDOW_MS must be positive")
+            .int("REFRESH_RATE_LIMIT_WINDOW_MS must be integer"),
+
+        ADMIN_RATE_LIMIT_MAX: z.coerce
+            .number({
+                invalid_type_error:
+                    "REFRESH_RATE_LIMIT_MAX must be a valid number",
+            })
+            .positive("REFRESH_RATE_LIMIT_MAX must be positive")
+            .int("REFRESH_RATE_LIMIT_MAX must be integer"),
     })
     .refine((data) => data.DB_MIN_POOL_SIZE <= data.DB_MAX_POOL_SIZE, {
         message: "DB_MIN_POOL_SIZE cannot be greater than DB_MAX_POOL_SIZE",

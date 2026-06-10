@@ -24,14 +24,14 @@ const router = express.Router();
 
 router.post(
     "/register",
-    registerRateLimiter,
     validateMiddleware(registerSchema),
+    registerRateLimiter,
     registerController
 );
 router.post(
     "/login",
-    loginRateLimiter,
     validateMiddleware(loginSchema),
+    loginRateLimiter,
     loginController
 );
 router.post("/logout", verifyAccessToken, logoutController);

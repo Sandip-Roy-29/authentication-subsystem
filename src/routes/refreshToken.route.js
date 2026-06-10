@@ -14,8 +14,8 @@ const router = express.Router();
 
 router.post(
     "/",
-    refreshTokenRateLimiter,
     verifyRefreshToken,
+    refreshTokenRateLimiter,
     refreshAccessTokenController
 );
 

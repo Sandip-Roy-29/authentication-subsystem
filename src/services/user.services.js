@@ -12,3 +12,24 @@ export const deleteUser = async (userId) => {
         throw new AppError("User not found", 404);
     }
 };
+
+export const updateUserRole = async (userId, role) => {
+    const user = await User.findById(userId);
+
+    if (!user) {
+        throw new AppError("User not found", 404);
+    }
+
+    if (user.role === role) {
+  throw new AppError(
+    `User is already ${role}`,
+    400
+  );
+}
+
+    user.role = role;
+
+    await user.save();
+
+    return user;
+};

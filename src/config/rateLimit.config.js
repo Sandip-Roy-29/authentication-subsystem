@@ -21,6 +21,18 @@ export const refreshTokenRateLimiter = createRateLimiter({
 
 export const adminRateLimiter = createRateLimiter({
     prefix: "admin",
+    windowMs: env.ADMIN_RATE_LIMIT_WINDOW_MS,
+    max: env.ADMIN_RATE_LIMIT_MAX,
+});
+
+export const verificationRateLimiter = createRateLimiter({
+    prefix: "verification",
+    windowMs: env.REFRESH_RATE_LIMIT_WINDOW_MS,
+    max: env.REFRESH_RATE_LIMIT_MAX,
+});
+
+export const resendVerificationRateLimiter = createRateLimiter({
+    prefix: "verification",
     windowMs: env.REFRESH_RATE_LIMIT_WINDOW_MS,
     max: env.REFRESH_RATE_LIMIT_MAX,
 });

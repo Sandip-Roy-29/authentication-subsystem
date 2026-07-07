@@ -3,7 +3,8 @@ import env from "../config/env.config.js";
 import redisClient from "../config/redis.config.js";
 
 // Services
-import { loginUser, registerUser } from "../services/auth.services.js";
+import { loginUser, register } from "../services/auth.services.js";
+import { sendVerificationEmail, verifyEmailOtp, resendVerificationEmail } from "../services/emailVerification.service.js";
 
 // Utils
 import ApiResponse from "../utils/ApiResponse.util.js";
@@ -12,15 +13,49 @@ import setAuthCookies from "../utils/setAuthCookies.util.js";
 //Model
 import { User } from "../models/user.model.js";
 
-export const registerController = async (req, res) => {
-    const { name, email, password, role } = req.body;
+export const userRegisterController = async (req, res) => {
+    const { name, email, password } = req.body;
+    const role = "user";
 
-    const { user, accessToken, refreshToken } = await registerUser({
-        name,
-        email,
-        password,
-        role,
+    await sendVerificationEmail({name, email, password, role});
+
+    return res.status(200).json(
+        ApiResponse.success({
+            message: "Verification email sent successfully",
+            requestId: req.requestId,
+        })
+    );
+};
+
+export const adminRegisterController = async (req, res) => {
+    const { name, email, password } = req.body;
+    const role = "admin";
+
+    await sendVerificationEmail({name, email, password, role});
+
+    return res.status(200).json(
+        ApiResponse.success({
+            message: "Verification email sent successfully",
+            requestId: req.requestId,
+        })
+    );
+};
+
+export const verificationEmailController = async (req, res) => {
+    const {email, otp} = req.body;
+
+    const data = await verifyEmailOtp({email, otp});
+
+    await redisClient.del(`email-verification:${email}`);
+    await redisClient.del(`email-verification-cooldown:${email}`);
+
+    const { user, accessToken, refreshToken } = await register({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        role: data.role,
     });
+
     setAuthCookies(res, refreshToken);
 
     return res.status(201).json(
@@ -33,6 +68,19 @@ export const registerController = async (req, res) => {
                 accessToken: accessToken,
             },
             message: "User registered successfully",
+            requestId: req.requestId,
+        })
+    );
+};
+
+export const resendVerificationEmailController = async (req, res) => {
+    const {email} = req.body;
+
+    await resendVerificationEmail({email});
+
+    return res.status(200).json(
+        ApiResponse.success({
+            message: "Verification email sent successfully",
             requestId: req.requestId,
         })
     );

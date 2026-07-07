@@ -137,18 +137,74 @@ const envSchema = z
         ADMIN_RATE_LIMIT_WINDOW_MS: z.coerce
             .number({
                 invalid_type_error:
-                    "REFRESH_RATE_LIMIT_WINDOW_MS must be a valid number",
+                    "ADMIN_RATE_LIMIT_WINDOW_MS must be a valid number",
             })
-            .positive("REFRESH_RATE_LIMIT_WINDOW_MS must be positive")
-            .int("REFRESH_RATE_LIMIT_WINDOW_MS must be integer"),
+            .positive("ADMIN_RATE_LIMIT_WINDOW_MS must be positive")
+            .int("ADMIN_RATE_LIMIT_WINDOW_MS must be integer"),
 
         ADMIN_RATE_LIMIT_MAX: z.coerce
             .number({
                 invalid_type_error:
-                    "REFRESH_RATE_LIMIT_MAX must be a valid number",
+                    "ADMIN_RATE_LIMIT_MAX must be a valid number",
             })
-            .positive("REFRESH_RATE_LIMIT_MAX must be positive")
-            .int("REFRESH_RATE_LIMIT_MAX must be integer"),
+            .positive("ADMIN_RATE_LIMIT_MAX must be positive")
+            .int("ADMIN_RATE_LIMIT_MAX must be integer"),
+        VERIFICATION_RATE_LIMIT_WINDOW_MS: z.coerce
+            .number({
+                invalid_type_error:
+                    "VERIFICATION_RATE_LIMIT_WINDOW_MS must be a valid number",
+            })
+            .positive("VERIFICATION_RATE_LIMIT_WINDOW_MS must be positive")
+            .int("VERIFICATION_RATE_LIMIT_WINDOW_MS must be integer"),
+
+        VERIFICATION_RATE_LIMIT_MAX: z.coerce
+            .number({
+                invalid_type_error:
+                    "VERIFICATION_RATE_LIMIT_MAX must be a valid number",
+            })
+            .positive("VERIFICATION_RATE_LIMIT_MAX must be positive")
+            .int("VERIFICATION_RATE_LIMIT_MAX must be integer"),
+        RESEND_VERIFICATION_RATE_LIMIT_WINDOW_MS: z.coerce
+            .number({
+                invalid_type_error:
+                    "RESEND_VERIFICATION_RATE_LIMIT_WINDOW_MS must be a valid number",
+            })
+            .positive("RESEND_VERIFICATION_RATE_LIMIT_WINDOW_MS must be positive")
+            .int("RESEND_VERIFICATION_RATE_LIMIT_WINDOW_MS must be integer"),
+
+        RESEND_VERIFICATION_RATE_LIMIT_MAX: z.coerce
+            .number({
+                invalid_type_error:
+                    "RESEND_VERIFICATION_RATE_LIMIT_MAX must be a valid number",
+            })
+            .positive("RESEND_VERIFICATION_RATE_LIMIT_MAX must be positive")
+            .int("RESEND_VERIFICATION_RATE_LIMIT_MAX must be integer"),
+
+        SMTP_HOST: z.coerce
+            .string({
+                required_error: "SMTP_HOST is required",
+            }),
+
+        SMTP_PORT: z.coerce
+            .number({
+                invalid_type_error: "PORT must be a valid number",
+            })
+            .min(1, "PORT must be greater than 0")
+            .max(65535, "PORT must be less than 65535")
+            .int("PORT must be integer")
+            .default(587),
+
+        SMTP_EMAIL: z.coerce
+            .string({
+                required_error: "SMTP_EMAIL is required",
+            })
+            .email("Invalid SMTP_EMAIL"),
+
+        SMTP_PASSWORD: z
+            .string({
+                required_error: "SMTP_PASSWORD is required",
+            })
+            .min(1,"SMTP_PASSWORD cannot be empty")
     })
     .refine((data) => data.DB_MIN_POOL_SIZE <= data.DB_MAX_POOL_SIZE, {
         message: "DB_MIN_POOL_SIZE cannot be greater than DB_MAX_POOL_SIZE",

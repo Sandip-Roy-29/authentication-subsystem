@@ -1,6 +1,7 @@
 // Configs
 import app from "./src/app.js";
 import env from "./src/config/env.config.js";
+import transporter from "./src/config/nodemailer.config.js";
 import redisClient from "./src/config/redis.config.js";
 
 // Database
@@ -55,6 +56,7 @@ const startServer = async () => {
     try {
         await connectDB();
         await redisClient.connect();
+        await transporter.verify();
 
         httpServer = app.listen(env.PORT, () => {
             logger.info(`App listening on port ${env.PORT}`);

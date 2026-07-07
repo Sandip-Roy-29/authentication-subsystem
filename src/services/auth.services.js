@@ -8,7 +8,7 @@ import {
     generateRefreshToken,
 } from "../utils/generateTokens.util.js";
 
-export const registerUser = async ({ name, email, password, role }) => {
+export const register = async ({ name, email, password, role }) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -19,7 +19,7 @@ export const registerUser = async ({ name, email, password, role }) => {
         name: name,
         email: email,
         password: password,
-        role: role || "user",
+        role,
     });
 
     const accessToken = generateAccessToken(user);

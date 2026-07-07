@@ -31,6 +31,35 @@ export const registerSchema = z.object({
     }),
 });
 
+export const registrationVerificationSchema = z.object({
+    body: z.object({
+        email: z
+            .string({
+                required_error: "Email is required",
+            })
+            .trim()
+            .email("Invalid email")
+            .toLowerCase(),
+            
+        otp: z.number({
+            required_error: "OTP is required",
+        })
+        .regex(/^\d{6}$/, "OTP must be exactly 6 digits")
+    })
+});
+
+export const resendVerificationSchema = z.object({
+    body: z.object({
+        email: z
+            .string({
+                required_error: "Email is required",
+            })
+            .trim()
+            .email("Invalid email")
+            .toLowerCase(),
+    })
+});
+
 export const loginSchema = z.object({
     body: z.object({
         email: z

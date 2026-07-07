@@ -1,5 +1,5 @@
 // Services
-import { getUsers } from "../services/user.services.js";
+import { getUsers, updateUserRole } from "../services/user.services.js";
 import { deleteUser } from "../services/user.services.js";
 
 // Utils
@@ -27,6 +27,29 @@ export const deleteUserController = async (req, res) => {
     res.status(200).json(
         ApiResponse.success({
             message: "User deleted successfully",
+            requestId: req.requestId,
+        })
+    );
+};
+
+export const updateRoleController = async (req, res) => {
+    const { role } = req.body;
+
+    if (req.user._id.toString() === req.params.userId) {
+        throw new AppError("You can not change your own role", 400);
+    }
+
+    const user = await updateUserRole(req.params.userId, role);
+
+    res.status(200).json(
+        ApiResponse.success({
+            data:{
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+            },
+            message: "User updated successfully",
             requestId: req.requestId,
         })
     );

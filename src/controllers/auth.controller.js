@@ -3,7 +3,7 @@ import env from "../config/env.config.js";
 import redisClient from "../config/redis.config.js";
 
 // Services
-import { loginUser, register } from "../services/auth.services.js";
+import { forgotPassword, loginUser, register, resetPassword } from "../services/auth.services.js";
 import { sendVerificationEmail, verifyEmailOtp, resendVerificationEmail } from "../services/emailVerification.service.js";
 
 // Utils
@@ -81,6 +81,32 @@ export const resendVerificationEmailController = async (req, res) => {
     return res.status(200).json(
         ApiResponse.success({
             message: "Verification email sent successfully",
+            requestId: req.requestId,
+        })
+    );
+};
+
+export const forgotPasswordController = async (req, res) => {
+    const {email} = req.body;
+
+    await forgotPassword({email});
+
+    return res.status(200).json(
+        ApiResponse.success({
+            message: "Password reset code sent successfully",
+            requestId: req.requestId,
+        })
+    );
+};
+
+export const resetPasswordController = async (req, res) => {
+    const {email, otp, password} = req.body;
+
+    await resetPassword({email, otp, password});
+
+    return res.status(200).json(
+        ApiResponse.success({
+            message: "Password reset successfully",
             requestId: req.requestId,
         })
     );

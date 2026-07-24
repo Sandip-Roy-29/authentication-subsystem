@@ -179,6 +179,36 @@ const envSchema = z
             })
             .positive("RESEND_VERIFICATION_RATE_LIMIT_MAX must be positive")
             .int("RESEND_VERIFICATION_RATE_LIMIT_MAX must be integer"),
+        FORGOT_PASSWORD_RATE_LIMIT_WINDOW_MS: z.coerce
+            .number({
+                invalid_type_error:
+                    "FORGOT_PASSWORD_RATE_LIMIT_WINDOW_MS must be a valid number",
+            })
+            .positive("FORGOT_PASSWORD_RATE_LIMIT_WINDOW_MS must be positive")
+            .int("FORGOT_PASSWORD_RATE_LIMIT_WINDOW_MS must be integer"),
+
+        FORGOT_PASSWORD_RATE_LIMIT_MAX: z.coerce
+            .number({
+                invalid_type_error:
+                    "FORGOT_PASSWORD_RATE_LIMIT_MAX must be a valid number",
+            })
+            .positive("FORGOT_PASSWORD_RATE_LIMIT_MAX must be positive")
+            .int("FORGOT_PASSWORD_RATE_LIMIT_MAX must be integer"),
+        RESET_PASSWORD_RATE_LIMIT_WINDOW_MS: z.coerce
+            .number({
+                invalid_type_error:
+                    "RESET_PASSWORD_RATE_LIMIT_WINDOW_MS must be a valid number",
+            })
+            .positive("RESET_PASSWORD_RATE_LIMIT_WINDOW_MS must be positive")
+            .int("RESET_PASSWORD_RATE_LIMIT_WINDOW_MS must be integer"),
+
+        RESET_PASSWORD_RATE_LIMIT_MAX: z.coerce
+            .number({
+                invalid_type_error:
+                    "RESET_PASSWORD_RATE_LIMIT_MAX must be a valid number",
+            })
+            .positive("RESET_PASSWORD_RATE_LIMIT_MAX must be positive")
+            .int("RESET_PASSWORD_RATE_LIMIT_MAX must be integer"),
 
         SMTP_HOST: z.coerce
             .string({

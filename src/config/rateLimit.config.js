@@ -27,12 +27,24 @@ export const adminRateLimiter = createRateLimiter({
 
 export const verificationRateLimiter = createRateLimiter({
     prefix: "verification",
-    windowMs: env.REFRESH_RATE_LIMIT_WINDOW_MS,
-    max: env.REFRESH_RATE_LIMIT_MAX,
+    windowMs: env.VERIFICATION_RATE_LIMIT_WINDOW_MS,
+    max: env.VERIFICATION_RATE_LIMIT_MAX,
 });
 
 export const resendVerificationRateLimiter = createRateLimiter({
-    prefix: "verification",
-    windowMs: env.REFRESH_RATE_LIMIT_WINDOW_MS,
-    max: env.REFRESH_RATE_LIMIT_MAX,
+    prefix: "resend verification",
+    windowMs: env.RESEND_VERIFICATION_RATE_LIMIT_WINDOW_MS,
+    max: env.RESEND_VERIFICATION_RATE_LIMIT_MAX,
+});
+
+export const forgotPasswordRateLimiter = createRateLimiter({
+    prefix: "forgot",
+    windowMs: env.FORGOT_PASSWORD_RATE_LIMIT_WINDOW_MS,
+    max: env.FORGOT_PASSWORD_RATE_LIMIT_MAX,
+});
+
+export const resetPasswordRateLimiter = createRateLimiter({
+    prefix: "reset",
+    windowMs: env.RESET_PASSWORD_RATE_LIMIT_WINDOW_MS,
+    max: env.RESET_PASSWORD_RATE_LIMIT_MAX,
 });

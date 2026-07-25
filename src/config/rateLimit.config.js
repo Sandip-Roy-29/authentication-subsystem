@@ -48,3 +48,9 @@ export const resetPasswordRateLimiter = createRateLimiter({
     windowMs: env.RESET_PASSWORD_RATE_LIMIT_WINDOW_MS,
     max: env.RESET_PASSWORD_RATE_LIMIT_MAX,
 });
+
+export const googleRateLimiter = createRateLimiter({
+    prefix: "google",
+    windowMs: env.GOOGLE_RATE_LIMIT_WINDOW_MS,
+    max: env.GOOGLE_RATE_LIMIT_MAX,
+});

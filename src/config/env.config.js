@@ -209,6 +209,21 @@ const envSchema = z
             })
             .positive("RESET_PASSWORD_RATE_LIMIT_MAX must be positive")
             .int("RESET_PASSWORD_RATE_LIMIT_MAX must be integer"),
+        GOOGLE_RATE_LIMIT_WINDOW_MS: z.coerce
+            .number({
+                invalid_type_error:
+                    "GOOGLE_RATE_LIMIT_WINDOW_MS must be a valid number",
+            })
+            .positive("GOOGLE_RATE_LIMIT_WINDOW_MS must be positive")
+            .int("GOOGLE_RATE_LIMIT_WINDOW_MS must be integer"),
+
+        GOOGLE_RATE_LIMIT_MAX: z.coerce
+            .number({
+                invalid_type_error:
+                    "GOOGLE_RATE_LIMIT_MAX must be a valid number",
+            })
+            .positive("GOOGLE_RATE_LIMIT_MAX must be positive")
+            .int("GOOGLE_RATE_LIMIT_MAX must be integer"),
 
         SMTP_HOST: z.coerce
             .string({
@@ -234,7 +249,31 @@ const envSchema = z
             .string({
                 required_error: "SMTP_PASSWORD is required",
             })
-            .min(1,"SMTP_PASSWORD cannot be empty")
+            .min(1,"SMTP_PASSWORD cannot be empty"),
+
+        GOOGLE_CLIENT_ID: z
+            .string({
+                required_error: "GOOGLE_CLIENT_ID is required",
+            })
+            .min(1,"GOOGLE_CLIENT_ID cannot be empty"),
+        
+        GOOGLE_CLIENT_SECRET: z
+            .string({
+                required_error: "GOOGLE_CLIENT_SECRET is required",
+            })
+            .min(1,"GOOGLE_CLIENT_SECRET cannot be empty"),
+
+        GOOGLE_CALLBACK_URL: z
+            .string({
+                required_error: "GOOGLE_CALLBACK_URL is required",
+            })
+            .url("GOOGLE_CALLBACK_URL must be a valid URL"),
+        
+        FRONTEND_URL: z
+            .string({
+                required_error: "FRONTEND_URL is required",
+            })
+            .url("FRONTEND_URL must be a valid URL"),
     })
     .refine((data) => data.DB_MIN_POOL_SIZE <= data.DB_MAX_POOL_SIZE, {
         message: "DB_MIN_POOL_SIZE cannot be greater than DB_MAX_POOL_SIZE",

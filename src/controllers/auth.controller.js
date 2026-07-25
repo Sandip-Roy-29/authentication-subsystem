@@ -3,7 +3,7 @@ import env from "../config/env.config.js";
 import redisClient from "../config/redis.config.js";
 
 // Services
-import { forgotPassword, loginUser, register, resetPassword } from "../services/auth.services.js";
+import { forgotPassword, googleLogin, loginUser, register, resetPassword } from "../services/auth.services.js";
 import { sendVerificationEmail, verifyEmailOtp, resendVerificationEmail } from "../services/emailVerification.service.js";
 
 // Utils
@@ -132,6 +132,26 @@ export const loginController = async (req, res) => {
                 accessToken: accessToken,
             },
             message: "User logged in successfully",
+            requestId: req.requestId,
+        })
+    );
+};
+
+export const googleLoginController = async (req, res) => {
+    const { idToken } = req.body;
+
+    const { userResponse, accessToken, refreshToken } =
+        await googleLogin({idToken});
+
+    setAuthCookies(res, refreshToken);
+
+    return res.status(200).json(
+        ApiResponse.success({
+            data: {
+                ...userResponse,
+                accessToken,
+            },
+            message: "Logged in successfully",
             requestId: req.requestId,
         })
     );

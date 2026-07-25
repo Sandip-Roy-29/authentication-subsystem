@@ -12,6 +12,8 @@ import { sendOtpEmail } from "../utils/sendOtpEmail.util.js";
 
 // Config
 import redisClient from "../config/redis.config.js";
+import googleClient from "../config/google.config.js";
+import env from "../config/env.config.js";
 
 export const register = async ({ name, email, password, role }) => {
     const existingUser = await User.findOne({ email });
@@ -71,6 +73,70 @@ export const loginUser = async ({ email, password }) => {
     };
 
     return { userResponse, accessToken, refreshToken };
+};
+
+export const googleLogin = async ({idToken}) => {
+    const ticket = await googleClient.verifyIdToken({
+        idToken,
+        audience: env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+
+    const {
+        sub: googleId,
+        email,
+        name,
+        email_verified,
+    } = payload;
+
+    if (!email_verified) {
+        throw new AppError("Google email is not verified", 401);
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+        user = new User({
+            name,
+            email,
+            provider: "google",
+            googleId,
+            role: "user",
+            isEmailVerified: true,
+        });
+    }
+
+    else if (user.provider === "local") {
+        user.provider = "google";
+        user.googleId = googleId;
+        user.isEmailVerified = true;
+    }
+
+    else if (user.googleId !== googleId) {
+        throw new AppError("Google account mismatch", 401);
+    }
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    user.refreshToken = {
+        token: refreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    };
+
+    await user.save();
+
+    return {
+        userResponse: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+        },
+        accessToken,
+        refreshToken,
+    };
 };
 
 export const forgotPassword = async ({ email }) => {

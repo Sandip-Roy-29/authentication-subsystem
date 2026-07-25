@@ -38,8 +38,9 @@ const userSchema = new Schema(
 
         password: {
             type: String,
-            required: [true, "Password is required"],
-            minlength: [8, "Password must be at least 8 characters"],
+            required: function () {
+                return this.provider == "local";
+            },
             select: false,
         },
 
@@ -53,6 +54,23 @@ const userSchema = new Schema(
                 type: Date,
             },
         },
+
+        provider: {
+            type: String,
+            enum: ["local", "google"],
+            default: "local",
+        },
+
+        googleId: {
+            type: String,
+            unique: true,
+            sparse: true,
+        },
+
+        isEmailVerified: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,
@@ -62,6 +80,7 @@ const userSchema = new Schema(
 
 userSchema.pre("save", async function () {
     if (!this.isModified("password")) return;
+    if (!this.password) return;
 
     this.password = await bcrypt.hash(
         this.password,
@@ -87,7 +106,9 @@ userSchema.pre("save", async function () {
 });
 
 userSchema.methods.comparePassword = async function (incomingPassword) {
-    return await bcrypt.compare(incomingPassword, this.password);
+    if (!this.password) return false;
+
+    return bcrypt.compare(incomingPassword, this.password);
 };
 
 userSchema.methods.compareRefreshToken = async function (incomingToken) {

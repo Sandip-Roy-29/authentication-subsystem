@@ -2,10 +2,10 @@
 import express from "express";
 
 // Controller
-import { userRegisterController, adminRegisterController, loginController,logoutController, verificationEmailController, resendVerificationEmailController, forgotPasswordController, resetPasswordController } from "../controllers/auth.controller.js";
+import { userRegisterController, adminRegisterController, loginController,logoutController, verificationEmailController, resendVerificationEmailController, forgotPasswordController, resetPasswordController, googleLoginController } from "../controllers/auth.controller.js";
 
 // Validation
-import { registerSchema, registrationVerificationSchema, resetPasswordSchema, resendVerificationSchema } from "../validations/auth.validation.js";
+import { registerSchema, registrationVerificationSchema, resetPasswordSchema, resendVerificationSchema, googleLoginSchema } from "../validations/auth.validation.js";
 import { loginSchema } from "../validations/auth.validation.js";
 import verifyAccessToken from "../middlewares/verifyAccessToken.middleware.js";
 
@@ -13,6 +13,7 @@ import verifyAccessToken from "../middlewares/verifyAccessToken.middleware.js";
 import {
     adminRateLimiter,
     forgotPasswordRateLimiter,
+    googleRateLimiter,
     loginRateLimiter,
     registerRateLimiter,
     resendVerificationRateLimiter,
@@ -69,6 +70,12 @@ router.post(
     validateMiddleware(loginSchema),
     loginRateLimiter,
     loginController
+);
+router.post(
+    "/google",
+    validateMiddleware(googleLoginSchema),
+    googleRateLimiter,
+    googleLoginController
 );
 router.post("/logout", verifyAccessToken, logoutController);
 

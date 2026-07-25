@@ -109,3 +109,11 @@ export const loginSchema = z.object({
             ),
     }),
 });
+
+export const googleLoginSchema = z.object({
+    body: z.object({
+        idToken: z.string({
+            required_error: "Google ID token is required",
+        }),
+    }),
+});

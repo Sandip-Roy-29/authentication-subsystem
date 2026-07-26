@@ -18,6 +18,14 @@
     "author": "",
     "license": "ISC",
     "type": "module",
+    "imports": {
+        "#env": "./src/config/env/index.js",
+        "#config/*": "./src/config/*",
+        "#infra/*": "./src/infrastructure/*",
+        "#modules/*": "./src/modules/*",
+        "#shared/*": "./src/shared/*",
+        "#routes/*": "./src/routes/*"
+    },
     "dependencies": {
         "bcrypt": "^6.0.0",
         "cookie-parser": "^1.4.7",

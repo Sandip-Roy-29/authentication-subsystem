@@ -3,6 +3,19 @@ import globals from "globals";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig([
+    {
+        ignores: [
+            "node_modules/",
+            "coverage/",
+            "dist/",
+            "build/",
+            "coverage/",
+            ".env",
+            ".env.*",
+            "logs/",
+        ],
+    },
+
     // Base recommended JS rules
     js.configs.recommended,
 

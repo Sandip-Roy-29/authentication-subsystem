@@ -1,15 +1,12 @@
-// Configs
 import app from "./src/app.js";
-import env from "./src/config/env.config.js";
-import transporter from "./src/config/nodemailer.config.js";
-import redisClient from "./src/config/redis.config.js";
+import env from "#env";
+import transporter from "#infra/mail/transporter.js";
+import redisClient from "#infra/redis/redis.client.js";
 
-// Database
-import connectDB from "./src/db/connectDB.js";
-import disconnectDB from "./src/db/disconnectDB.js";
+import connectDB from "#infra/database/connectDB.js";
+import disconnectDB from "#infra/database/disconnectDB.js";
 
-// Utils
-import logger from "./src/utils/logger.util.js";
+import { logger } from "#shared/utils";
 
 let httpServer;
 

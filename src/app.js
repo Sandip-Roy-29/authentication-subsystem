@@ -1,19 +1,16 @@
-// packages
 import express from "express";
 import cookieParser from "cookie-parser";
-
-//Routes
 import healthRoute from "../src/routes/health.route.js";
-import authRoute from "./routes/auth.route.js";
-import meRoute from "./routes/me.route.js";
-import refreshTokenRoute from "./routes/refreshToken.route.js";
-import userRoute from "./routes/user.route.js";
+import authRoute from "#modules/auth/routes/auth.route.js";
+import meRoute from "#modules/user/routes/me.route.js";
+import userRoute from "#modules/user/routes/user.route.js";
 
-// Middlewares
-import requestLoggerMiddleware from "./middlewares/requestLogger.middleware.js";
-import errorMiddleware from "./middlewares/error.middleware.js";
-import requestIdMiddleware from "./middlewares/requestId.middleware.js";
-import verifyAccessToken from "./middlewares/verifyAccessToken.middleware.js";
+import {
+    requestLoggerMiddleware,
+    errorMiddleware,
+    requestIdMiddleware,
+} from "#shared/middlewares";
+import { verifyAccessToken } from "#modules/auth/middlewares";
 
 const app = express();
 
@@ -26,7 +23,6 @@ app.set("trust proxy", 1);
 app.use("/health", healthRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/me", verifyAccessToken, meRoute);
-app.use("/api/v1/refresh-token", refreshTokenRoute);
 app.use("/api/v1/users", userRoute);
 
 app.use(errorMiddleware);

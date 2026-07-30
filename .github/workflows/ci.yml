@@ -107,13 +107,13 @@ jobs:
                 fi
 
             - name: Check MongoDB URI
+              env:
+                MONGODB_URI: ${{ secrets.MONGODB_URI }}
               run: |
                 if [ -z "$MONGODB_URI" ]; then
                 echo "MONGODB_URI secret is missing"
                 exit 1
                 fi
-                env:
-                  MONGODB_URI: ${{ secrets.MONGODB_URI }}
 
             - name: Run ESLint
               run: npm run lint

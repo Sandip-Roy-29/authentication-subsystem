@@ -99,7 +99,7 @@ jobs:
             
             - name: Verify .env.test
               run: |
-                lif [ -f .env.test ]; then
+                if [ -f .env.test ]; then
                 echo ".env.test created successfully"
                 else
                 echo ".env.test not found"

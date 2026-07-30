@@ -1,7 +1,6 @@
 import express from "express";
 import {
-    userRegisterController,
-    adminRegisterController,
+    registerController,
     loginController,
     logoutController,
     verificationEmailController,
@@ -45,9 +44,9 @@ router.post(
         req.role = "user";
         next();
     },
-    validateMiddleware(registerSchema),
     registerRateLimiter,
-    userRegisterController
+    validateMiddleware(registerSchema),
+    registerController
 );
 router.post(
     "/admin/register",
@@ -57,44 +56,44 @@ router.post(
     },
     verifyAccessToken,
     authorize("admin"),
-    validateMiddleware(registerSchema),
     adminRateLimiter,
-    adminRegisterController
+    validateMiddleware(registerSchema),
+    registerController
 );
 router.post(
     "/verify-email",
-    validateMiddleware(registrationVerificationSchema),
     verificationRateLimiter,
+    validateMiddleware(registrationVerificationSchema),
     verificationEmailController
 );
 router.post(
     "/resend-verification",
-    validateMiddleware(resendVerificationSchema),
     resendVerificationRateLimiter,
+    validateMiddleware(resendVerificationSchema),
     resendVerificationEmailController
 );
 router.post(
     "/forgot-password",
-    validateMiddleware(resendVerificationSchema),
     forgotPasswordRateLimiter,
+    validateMiddleware(resendVerificationSchema),
     forgotPasswordController
 );
 router.post(
     "/reset-password",
-    validateMiddleware(resetPasswordSchema),
     resetPasswordRateLimiter,
+    validateMiddleware(resetPasswordSchema),
     resetPasswordController
 );
 router.post(
     "/login",
-    validateMiddleware(loginSchema),
     loginRateLimiter,
+    validateMiddleware(loginSchema),
     loginController
 );
 router.post(
     "/google",
-    validateMiddleware(googleLoginSchema),
     googleRateLimiter,
+    validateMiddleware(googleLoginSchema),
     googleLoginController
 );
 router.post(

@@ -32,7 +32,7 @@ export const verificationRateLimiter = createRateLimiter({
 });
 
 export const resendVerificationRateLimiter = createRateLimiter({
-    prefix: "resend verification",
+    prefix: "resend-verification",
     windowMs: env.RESEND_VERIFICATION_RATE_LIMIT_WINDOW_MS,
     max: env.RESEND_VERIFICATION_RATE_LIMIT_MAX,
 });

@@ -7,7 +7,7 @@ import {
     getUsersController,
     updateRoleController,
 } from "../controllers/user.controller.js";
-import { updateRoleSchema } from "../validations/user.validation.js";
+import { updateRoleSchema } from "../validators/user.validation.js";
 
 const router = express.Router();
 

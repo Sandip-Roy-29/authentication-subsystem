@@ -1,6 +1,7 @@
 import { generateOtp, AppError } from "#shared/utils";
 import redisClient from "#infra/redis/redis.client.js";
 import { sendOtpEmail } from "../utils/sendOtpEmail.util";
+import { User } from "#modules/user/models/user.model.js";
 
 export const sendVerificationEmail = async ({
     name,
@@ -8,7 +9,23 @@ export const sendVerificationEmail = async ({
     password,
     role,
 }) => {
-    const otp = generateOtp();
+    
+    const existingUser = await User.exists({ email });
+
+    if (existingUser) {
+        throw new AppError("User already exists", 409);
+    }
+
+    const pending = await redisClient.exists(`email-verification:${email}`);
+
+    if (pending) {
+        throw new AppError(
+            "Email verification already pending. Please verify your email.",
+            409
+        );
+    }
+    
+    const otp = generateOtp();    
 
     await redisClient.set(
         `email-verification:${email}`,

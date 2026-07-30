@@ -2,7 +2,8 @@ export default {
     testEnvironment: "node",
     transform: {},
     verbose: true,
-    setupFilesAfterEnv: ["<rootDir>/tests/setup.js"],
+    setupFiles: ["<rootDir>/tests/setups/setupMock.js"],
+    setupFilesAfterEnv: ["<rootDir>/tests/setups/setupTest.js"],
     detectOpenHandles: true,
     moduleNameMapper: {
         "^#config/(.*)$": "<rootDir>/src/config/$1",

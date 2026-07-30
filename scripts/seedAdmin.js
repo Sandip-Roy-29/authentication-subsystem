@@ -20,6 +20,8 @@ const admin = new User({
     email: ADMIN_EMAIL,
     password: "Admin@123",
     role: "admin",
+    provider: "local",
+    isEmailVerified: true,
 });
 
 await admin.save();

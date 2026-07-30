@@ -17,7 +17,11 @@ const envSchema = appSchema
     .merge(emailSchema)
     .merge(oauthSchema)
     .merge(rateLimitSchema)
-    .merge(redisSchema);
+    .merge(redisSchema)
+    .refine((data) => data.DB_MIN_POOL_SIZE <= data.DB_MAX_POOL_SIZE, {
+        message: "DB_MIN_POOL_SIZE cannot be greater than DB_MAX_POOL_SIZE",
+        path: ["DB_MIN_POOL_SIZE"],
+    });
 
 const parsedEnv = envSchema.safeParse(process.env);
 

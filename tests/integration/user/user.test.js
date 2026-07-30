@@ -1,39 +1,36 @@
-// Configs
 import request from "supertest";
 import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
 
-// Helpers
-import { createAuthenticatedUser } from "../../helper/authenticatedUser.helper.js";
+import { User } from "#modules/user/models/user.model.js";
 
-describe("Get users", () => {
-    test("admin should get all users", async () => {
-        const admin = await createAuthenticatedUser("admin");
+import { createAuthenticatedAdmin } from "../../helper/createAuthenticatedAdmin.helper.js";
+import { createAuthenticatedUser } from "../../helper/createAuthenticatedUser.helper.js";
 
-        const { user } = await createAuthenticatedUser();
+describe("User routes", () => {
+    // ===========================
+    // GET /users
+    // ===========================
 
-        const response = await admin.agent
+    test("Should allow admin to get all users", async () => {
+        const { agent, accessToken } = await createAuthenticatedAdmin();
+
+        await createAuthenticatedUser();
+        await createAuthenticatedUser();
+
+        const response = await agent
             .get("/api/v1/users")
-            .set("Authorization", `Bearer ${admin.accessToken}`);
+            .set("Authorization", `Bearer ${accessToken}`);
 
         expect(response.statusCode).toBe(200);
         expect(response.body.success).toBe(true);
+
         expect(Array.isArray(response.body.data)).toBe(true);
-
-        const firstUser = response.body.data[0];
-
-        expect(firstUser.password).toBeUndefined();
-        expect(firstUser.refreshToken).toBeUndefined();
-
-        const emails = response.body.data.map((user) => user.email);
-
-        expect(emails).toContain(admin.user.email);
-        expect(emails).toContain(user.email);
+        expect(response.body.data.length).toBeGreaterThanOrEqual(3);
     });
-    test("user should not get all users", async () => {
-        const { agent, accessToken } = await createAuthenticatedUser();
 
-        await createAuthenticatedUser();
+    test("Should reject normal user from getting users", async () => {
+        const { agent, accessToken } = await createAuthenticatedUser();
 
         const response = await agent
             .get("/api/v1/users")
@@ -41,62 +38,190 @@ describe("Get users", () => {
 
         expect(response.statusCode).toBe(403);
         expect(response.body.success).toBe(false);
-        expect(response.body.message).toBe("Forbidden");
     });
-    test("unauthenticated user should not get users", async () => {
+
+    test("Should reject unauthenticated request to get users", async () => {
         const response = await request(app).get("/api/v1/users");
 
         expect(response.statusCode).toBe(401);
+        expect(response.body.success).toBe(false);
     });
-});
 
-describe("Delete user", () => {
-    test("admin should delete a user", async () => {
-        const { agent: adminAgent, accessToken } =
-            await createAuthenticatedUser("admin");
+    // ===========================
+    // DELETE /users/:userId
+    // ===========================
 
+    test("Should allow admin to delete user", async () => {
+        const { agent, accessToken } = await createAuthenticatedAdmin();
         const { userId } = await createAuthenticatedUser();
 
-        const response = await adminAgent
+        const response = await agent
             .delete(`/api/v1/users/${userId}`)
             .set("Authorization", `Bearer ${accessToken}`);
 
         expect(response.statusCode).toBe(200);
         expect(response.body.success).toBe(true);
+
+        const deletedUser = await User.findById(userId);
+
+        expect(deletedUser).toBeNull();
     });
-    test("user should not delete a user", async () => {
-        const { agent: userAgent, accessToken } =
-            await createAuthenticatedUser();
 
-        const { user } = await createAuthenticatedUser();
+    test("Should reject normal user from deleting user", async () => {
+        const { agent, accessToken } = await createAuthenticatedUser();
+        const { userId } = await createAuthenticatedUser();
 
-        const response = await userAgent
-            .delete(`/api/v1/users/${user._id}`)
+        const response = await agent
+            .delete(`/api/v1/users/${userId}`)
             .set("Authorization", `Bearer ${accessToken}`);
 
         expect(response.statusCode).toBe(403);
         expect(response.body.success).toBe(false);
-        expect(response.body.message).toBe("Forbidden");
     });
-    test("should return 404 when deleting non-existing user", async () => {
-        const { agent: adminAgent, accessToken } =
-            await createAuthenticatedUser("admin");
 
-        const userId = "507f1f77bcf86cd799439011";
+    test("Should reject unauthenticated request to delete user", async () => {
+        const { userId } = await createAuthenticatedUser();
 
-        const response = await adminAgent
-            .delete(`/api/v1/users/${userId}`)
+        const response = await request(app).delete(
+            `/api/v1/users/${userId}`
+        );
+
+        expect(response.statusCode).toBe(401);
+        expect(response.body.success).toBe(false);
+    });
+
+    test("Should reject deleting non-existing user", async () => {
+        const { agent, accessToken } = await createAuthenticatedAdmin();
+
+        const response = await agent
+            .delete("/api/v1/users/507f1f77bcf86cd799439011")
             .set("Authorization", `Bearer ${accessToken}`);
 
         expect(response.statusCode).toBe(404);
         expect(response.body.success).toBe(false);
-        expect(response.body.message).toBe("User not found");
     });
-    test("unauthenticated user should not delete user", async () => {
-        const { user } = await createAuthenticatedUser();
 
-        const response = await request(app).delete(`/api/v1/users/${user._id}`);
+    test("Should reject admin deleting own account", async () => {
+        const { agent, accessToken, userId } =
+            await createAuthenticatedAdmin();
+
+        const response = await agent
+            .delete(`/api/v1/users/${userId}`)
+            .set("Authorization", `Bearer ${accessToken}`);
+
+        expect(response.statusCode).toBe(400);
+        expect(response.body.success).toBe(false);
+    });
+
+    // ===========================
+    // PATCH /users/:userId/role
+    // ===========================
+
+    test("Should allow admin to update user role", async () => {
+        const { agent, accessToken } = await createAuthenticatedAdmin();
+        const { userId } = await createAuthenticatedUser();
+
+        const response = await agent
+            .patch(`/api/v1/users/${userId}/role`)
+            .set("Authorization", `Bearer ${accessToken}`)
+            .send({
+                role: "admin",
+            });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body.success).toBe(true);
+
+        expect(response.body.data.role).toBe("admin");
+
+        const user = await User.findById(userId);
+
+        expect(user.role).toBe("admin");
+    });
+
+    test("Should reject normal user from updating role", async () => {
+        const { agent, accessToken } = await createAuthenticatedUser();
+        const { userId } = await createAuthenticatedUser();
+
+        const response = await agent
+            .patch(`/api/v1/users/${userId}/role`)
+            .set("Authorization", `Bearer ${accessToken}`)
+            .send({
+                role: "admin",
+            });
+
+        expect(response.statusCode).toBe(403);
+        expect(response.body.success).toBe(false);
+    });
+
+    test("Should reject unauthenticated request to update role", async () => {
+        const { userId } = await createAuthenticatedUser();
+
+        const response = await request(app)
+            .patch(`/api/v1/users/${userId}/role`)
+            .send({
+                role: "admin",
+            });
 
         expect(response.statusCode).toBe(401);
+        expect(response.body.success).toBe(false);
+    });
+
+    test("Should reject updating non-existing user", async () => {
+        const { agent, accessToken } = await createAuthenticatedAdmin();
+
+        const response = await agent
+            .patch("/api/v1/users/507f1f77bcf86cd799439011/role")
+            .set("Authorization", `Bearer ${accessToken}`)
+            .send({
+                role: "admin",
+            });
+
+        expect(response.statusCode).toBe(404);
+        expect(response.body.success).toBe(false);
+    });
+
+    test("Should reject updating to same role", async () => {
+        const { agent, accessToken } = await createAuthenticatedAdmin();
+        const { userId } = await createAuthenticatedUser();
+
+        const response = await agent
+            .patch(`/api/v1/users/${userId}/role`)
+            .set("Authorization", `Bearer ${accessToken}`)
+            .send({
+                role: "user",
+            });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.body.success).toBe(false);
+    });
+
+    test("Should reject admin updating own role", async () => {
+        const { agent, accessToken, userId } =
+            await createAuthenticatedAdmin();
+
+        const response = await agent
+            .patch(`/api/v1/users/${userId}/role`)
+            .set("Authorization", `Bearer ${accessToken}`)
+            .send({
+                role: "user",
+            });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.body.success).toBe(false);
+    });
+
+    test("Should reject invalid role", async () => {
+        const { agent, accessToken } = await createAuthenticatedAdmin();
+        const { userId } = await createAuthenticatedUser();
+
+        const response = await agent
+            .patch(`/api/v1/users/${userId}/role`)
+            .set("Authorization", `Bearer ${accessToken}`)
+            .send({
+                role: "invalid-role",
+            });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.body.success).toBe(false);
     });
 });

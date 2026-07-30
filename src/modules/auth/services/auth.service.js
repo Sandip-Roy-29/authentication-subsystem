@@ -1,13 +1,11 @@
 import { User } from "../../user/models/user.model.js";
 import { AppError, generateOtp } from "#shared/utils";
-import {
-    generateAccessToken,
-    generateRefreshToken,
-} from "../utils/generateTokens.util.js";
+import { generateAccessToken } from "../utils/generateTokens.util.js";
 import { sendOtpEmail } from "../utils/sendOtpEmail.util.js";
 import redisClient from "#infra/redis/redis.client.js";
 import googleClient from "#infra/passport/google.client.js";
 import env from "#env";
+import { createSession } from "../utils/createSession.util.js";
 
 export const register = async ({ name, email, password, role }) => {
     const existingUser = await User.findOne({ email });
@@ -21,19 +19,13 @@ export const register = async ({ name, email, password, role }) => {
         email: email,
         password: password,
         role,
+        provider: "local",
+        isEmailVerified: true,
     });
-
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-
-    user.refreshToken = {
-        token: refreshToken,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    };
 
     await user.save();
 
-    return { user, accessToken, refreshToken };
+    return await createSession(user);
 };
 
 export const loginUser = async ({ email, password }) => {
@@ -43,30 +35,21 @@ export const loginUser = async ({ email, password }) => {
         throw new AppError("User does not exist", 404);
     }
 
+    if (!user.isEmailVerified) {
+        throw new AppError("Please verify your email before logging in.", 403);
+    }
+
+    if (user.provider === "google") {
+        throw new AppError("Please continue with Google.", 400);
+    }
+
     const isPasswordCorrect = await user.comparePassword(password);
 
     if (!isPasswordCorrect) {
         throw new AppError("Invalid credentials", 401);
     }
 
-    const refreshToken = generateRefreshToken(user);
-    const accessToken = generateAccessToken(user);
-
-    user.refreshToken = {
-        token: refreshToken,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    };
-
-    await user.save();
-
-    const userResponse = {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-    };
-
-    return { userResponse, accessToken, refreshToken };
+    return await createSession(user);
 };
 
 export const googleLogin = async ({ idToken }) => {
@@ -102,26 +85,8 @@ export const googleLogin = async ({ idToken }) => {
         throw new AppError("Google account mismatch", 401);
     }
 
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-
-    user.refreshToken = {
-        token: refreshToken,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    };
-
     await user.save();
-
-    return {
-        userResponse: {
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-        },
-        accessToken,
-        refreshToken,
-    };
+    return await createSession(user);
 };
 
 export const forgotPassword = async ({ email }) => {
@@ -191,26 +156,14 @@ export const resetPassword = async ({ email, otp, password }) => {
 };
 
 export const refreshToken = async (req) => {
-    const newAccessToken = generateAccessToken({
-        _id: req.refreshTokenPayload.sub,
-        email: req.refreshTokenPayload.email,
-    });
+    const user = await User.findById(req.refreshTokenPayload.sub);
 
-    const newRefreshToken = generateRefreshToken({
-        _id: req.refreshTokenPayload.sub,
-        email: req.refreshTokenPayload.email,
-    });
+if (!user) {
+    throw new AppError("User not found", 404);
+}
+    const newAccessToken = generateAccessToken(user);
 
-    const user = await User.findById(req.refreshTokenPayload.sub).select(
-        "+refreshToken.token"
-    );
-
-    user.refreshToken = {
-        token: newRefreshToken,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    };
-
-    await user.save();
+    const newRefreshToken = await createSession(user);
 
     return { newAccessToken, newRefreshToken };
 };

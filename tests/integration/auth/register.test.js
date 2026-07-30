@@ -1,21 +1,45 @@
 // Configs
 import request from "supertest";
 import app from "../../../src/app.js";
-import { describe, test, expect } from "@jest/globals";
+import { describe, test, expect, beforeEach } from "@jest/globals";
 
 // Helpers
+import { createAuthenticatedUser } from "../../helper/createAuthenticatedUser.helper.js";
 import { createUserPayload } from "../../helper/createUserPayload.helper.js";
-import { registerUser } from "../../helper/registerUser.helper.js";
+import { User } from "#modules/user/models/user.model.js";
+import { sendMailMock } from "../../mocks/transporter.mock.js";
 
 describe("Register route", () => {
-    test("Should register a user", async () => {
+    beforeEach(() => {
+        sendMailMock.mockClear();
+    });
+    test("Should send verification email successfully", async () => {
         const user = createUserPayload();
+        const response = await request(app)
+            .post("/api/v1/auth/register")
+            .send(user);
 
-        const response = await registerUser(user);
-
-        expect(response.statusCode).toBe(201);
+        expect(response.statusCode).toBe(200);
         expect(response.body.success).toBe(true);
-        expect(response.headers["set-cookie"][0]).toContain("refreshToken");
+        expect(response.body.message).toBe(
+            "Verification email sent successfully"
+        );
+
+        const createdUser = await User.findOne({
+            email: user.email,
+        });
+
+        expect(createdUser).toBeNull();
+
+        expect(sendMailMock).toHaveBeenCalledTimes(1);
+
+        expect(sendMailMock).toHaveBeenCalledWith(
+            expect.objectContaining({
+                to: user.email,
+                subject: "Verify your email",
+                html: expect.stringContaining("<h2>"),
+            })
+        );
     });
 
     test("Should reject less than 3 character name", async () => {
@@ -101,26 +125,17 @@ describe("Register route", () => {
     });
 
     test("Should reject duplicate email", async () => {
-        const response1 = await request(app)
+        const user = await createAuthenticatedUser();
+
+        const response = await request(app)
             .post("/api/v1/auth/register")
             .send({
                 name: "Test",
-                email: "test@gmail.com",
+                email: user.user.email,
                 password: "Test@123",
             });
 
-        expect(response1.statusCode).toBe(201);
-        expect(response1.body.success).toBe(true);
-
-        const response2 = await request(app)
-            .post("/api/v1/auth/register")
-            .send({
-                name: "Test",
-                email: "test@gmail.com",
-                password: "Test@123",
-            });
-
-        expect(response2.statusCode).toBe(409);
-        expect(response2.body.success).toBe(false);
+        expect(response.statusCode).toBe(409);
+        expect(response.body.success).toBe(false);
     });
 });

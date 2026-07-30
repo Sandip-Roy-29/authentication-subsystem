@@ -1,15 +1,19 @@
 // Configs
 import mongoose from "mongoose";
-import env from "../src/config/env.config.js";
+import env from "#env";
 import { beforeAll, afterAll, afterEach, jest } from "@jest/globals";
-import redisClient from "../src/config/redis.config.js";
+import redisClient from "#infra/redis/redis.client.js";
 
 // Models
-import { User } from "../src/models/user.model.js";
+import { User } from "#modules/user/models/user.model.js";
+import transporter from "#infra/mail/transporter.js";
 
 jest.setTimeout(60000);
 
 beforeAll(async () => {
+    jest.spyOn(transporter, "sendMail").mockResolvedValue({
+        messageId: "mock-message-id",
+    });
     await mongoose.connect(env.MONGODB_URI, {
         maxPoolSize: env.DB_MAX_POOL_SIZE || 10,
         minPoolSize: env.DB_MIN_POOL_SIZE || 0,

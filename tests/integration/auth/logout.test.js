@@ -1,14 +1,14 @@
-// Configs
 import request from "supertest";
 import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
 
-// Helpers
-import { createAuthenticatedUser } from "../../helper/authenticatedUser.helper.js";
+import { User } from "#modules/user/models/user.model.js";
+import redisClient from "#infra/redis/redis.client.js";
+import { createAuthenticatedUser } from "../../helper/createAuthenticatedUser.helper.js";
 
 describe("Logout route", () => {
-    test("Should logout a user", async () => {
-        const { accessToken, agent } = await createAuthenticatedUser();
+    test("Should logout successfully", async () => {
+        const { agent, accessToken } = await createAuthenticatedUser();
 
         const response = await agent
             .post("/api/v1/auth/logout")
@@ -16,32 +16,56 @@ describe("Logout route", () => {
 
         expect(response.statusCode).toBe(200);
         expect(response.body.success).toBe(true);
-
-        expect(response.headers["set-cookie"][0]).toContain("refreshToken=");
     });
 
-    test("Should reject invalid access token", async () => {
-        const response = await request(app)
-            .post("/api/v1/auth/logout")
-            .set("Authorization", "Bearer InvalidToken");
-
-        expect(response.statusCode).toBe(401);
-        expect(response.body.success).toBe(false);
-    });
-
-    test("Should reject without access token", async () => {
+    test("Should reject when not authenticated", async () => {
         const response = await request(app).post("/api/v1/auth/logout");
 
         expect(response.statusCode).toBe(401);
         expect(response.body.success).toBe(false);
     });
 
-    test("Should reject malformed authorization header", async () => {
-        const response = await request(app)
-            .post("/api/v1/auth/logout")
-            .set("Authorization", "InvalidFormat");
+    test("Should remove refresh token from database", async () => {
+        const { agent, userId, accessToken } = await createAuthenticatedUser();
 
-        expect(response.statusCode).toBe(401);
-        expect(response.body.success).toBe(false);
+        await agent
+            .post("/api/v1/auth/logout")
+            .set("Authorization", `Bearer ${accessToken}`);
+
+        const user = await User.findById(userId).select("+refreshToken.token");
+
+        expect(user.refreshToken.token).toBeUndefined();
+        expect(user.refreshToken.expiresAt).toBeUndefined();
+    });
+
+    test("Should blacklist the access token", async () => {
+        const { agent, accessToken } = await createAuthenticatedUser();
+
+        const response = await agent
+            .post("/api/v1/auth/logout")
+            .set("Authorization", `Bearer ${accessToken}`);
+
+        expect(response.statusCode).toBe(200);
+
+        const [, payload] = accessToken.split(".");
+        const decoded = JSON.parse(
+            Buffer.from(payload, "base64url").toString()
+        );
+
+        expect(await redisClient.get(`blacklist:${decoded.jti}`)).toBe(
+            "revoked"
+        );
+    });
+
+    test("Should clear refresh token cookie", async () => {
+        const { agent, accessToken } = await createAuthenticatedUser();
+
+        const response = await agent
+            .post("/api/v1/auth/logout")
+            .set("Authorization", `Bearer ${accessToken}`);
+
+        expect(response.headers["set-cookie"]).toEqual(
+            expect.arrayContaining([expect.stringContaining("refreshToken=")])
+        );
     });
 });

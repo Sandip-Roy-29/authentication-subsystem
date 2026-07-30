@@ -42,7 +42,7 @@ export const registrationVerificationSchema = z.object({
             .toLowerCase(),
 
         otp: z
-            .number({
+            .string({
                 required_error: "OTP is required",
             })
             .regex(/^\d{6}$/, "OTP must be exactly 6 digits"),

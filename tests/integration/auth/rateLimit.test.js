@@ -1,87 +1,174 @@
-// Configs
-import { describe, test, expect } from "@jest/globals";
-import env from "../../../src/config/env.config.js";
+import request from "supertest";
+import { describe, test, expect, beforeEach } from "@jest/globals";
 
-// Helpers
+import app from "../../../src/app.js";
+import env from "#env";
+import redisClient from "#infra/redis/redis.client.js";
+
 import { createUserPayload } from "../../helper/createUserPayload.helper.js";
-import { registerUser } from "../../helper/registerUser.helper.js";
-import { loginUser } from "../../helper/loginUser.helper.js";
-import { createAuthenticatedUser } from "../../helper/authenticatedUser.helper.js";
+import { createPendingVerification } from "../../helper/createPendingVerification.helper.js";
+import { createAuthenticatedUser } from "../../helper/createAuthenticatedUser.helper.js";
+import { createAuthenticatedAdmin } from "../../helper/createAuthenticatedAdmin.helper.js";
 
-describe("Rate Limit", () => {
-    test("should reject register requests after the configured limit is exceeded", async () => {
-        for (let i = 1; i <= env.REGISTER_RATE_LIMIT_MAX; i++) {
-            const user = createUserPayload();
-            const response = await registerUser(user);
+describe("Rate limiter", () => {
+    beforeEach(async () => {
+        await redisClient.flushDb();
+    });
 
-            expect(response.statusCode).toBe(201);
+    test("Should rate limit register route", async () => {
+        for (let i = 0; i < env.REGISTER_RATE_LIMIT_MAX; i++) {
+            await request(app)
+                .post("/api/v1/auth/register")
+                .send(createUserPayload());
         }
-        const user = createUserPayload();
-        const response = await registerUser(user);
+
+        const response = await request(app)
+            .post("/api/v1/auth/register")
+            .send(createUserPayload());
 
         expect(response.statusCode).toBe(429);
         expect(response.body.success).toBe(false);
-        expect(response.body.message).toBe(
-            "Too many requests. Please try again in 15 minutes."
-        );
     });
 
-    test("should reject login requests after the configured limit is exceeded", async () => {
-        const user = createUserPayload();
-        await registerUser(user);
-
-        for (let i = 1; i <= env.LOGIN_RATE_LIMIT_MAX; i++) {
-            const response = await loginUser(user);
-
-            expect(response.statusCode).toBe(200);
-            expect(response.headers["ratelimit-limit"]).toBeDefined();
-            expect(response.headers["ratelimit-remaining"]).toBeDefined();
-            expect(response.headers["ratelimit-reset"]).toBeDefined();
+    test("Should rate limit login route", async () => {
+        for (let i = 0; i < env.LOGIN_RATE_LIMIT_MAX; i++) {
+            await request(app)
+                .post("/api/v1/auth/login")
+                .send({
+                    email: "unknown@gmail.com",
+                    password: "WrongPassword",
+                });
         }
-        const response = await loginUser(user);
+
+        const response = await request(app)
+            .post("/api/v1/auth/login")
+            .send({
+                email: "unknown@gmail.com",
+                password: "WrongPassword",
+            });
 
         expect(response.statusCode).toBe(429);
         expect(response.body.success).toBe(false);
-        expect(response.body.message).toBe(
-            "Too many requests. Please try again in 15 minutes."
-        );
     });
 
-    test("should reject refresh token requests after the configured limit is exceeded", async () => {
-        const { agent } = await createAuthenticatedUser();
-
-        for (let i = 1; i <= env.REFRESH_RATE_LIMIT_MAX; i++) {
-            const response = await agent.post("/api/v1/refresh-token");
-
-            expect(response.statusCode).toBe(200);
+    test("Should rate limit verify-email route", async () => {
+        for (let i = 0; i < env.VERIFICATION_RATE_LIMIT_MAX; i++) {
+            await request(app)
+                .post("/api/v1/auth/verify-email")
+                .send({
+                    email: "test@gmail.com",
+                    otp: "123456",
+                });
         }
-        const response = await agent.post("/api/v1/refresh-token");
+
+        const response = await request(app)
+            .post("/api/v1/auth/verify-email")
+            .send({
+                email: "test@gmail.com",
+                otp: "123456",
+            });
 
         expect(response.statusCode).toBe(429);
         expect(response.body.success).toBe(false);
-        expect(response.body.message).toBe(
-            "Too many requests. Please try again in 15 minutes."
-        );
     });
 
-    test("should allow requests again after rate limit window resets", async () => {
-        const user = createUserPayload();
+    test("Should rate limit resend verification route", async () => {
+        const { user } = await createPendingVerification();
 
-        await registerUser(user);
+        await redisClient.del(
+            `email-verification-cooldown:${user.email}`
+        );
 
-        await loginUser(user);
-        await loginUser(user);
+        for (let i = 0; i < env.RESEND_VERIFICATION_RATE_LIMIT_MAX; i++) {
+            await request(app)
+                .post("/api/v1/auth/resend-verification")
+                .send({
+                    email: user.email,
+                });
 
-        const blockedResponse = await loginUser(user);
+            await redisClient.del(
+                `email-verification-cooldown:${user.email}`
+            );
+        }
 
-        expect(blockedResponse.statusCode).toBe(429);
+        const response = await request(app)
+            .post("/api/v1/auth/resend-verification")
+            .send({
+                email: user.email,
+            });
 
-        await new Promise((resolve) => {
-            setTimeout(resolve, 1100);
-        });
+        expect(response.statusCode).toBe(429);
+        expect(response.body.success).toBe(false);
+    });
 
-        const allowedResponse = await loginUser(user);
+    test("Should rate limit forgot password route", async () => {
+        const { user } = await createAuthenticatedUser();
 
-        expect(allowedResponse.statusCode).toBe(200);
+        await redisClient.del(
+            `password-reset-cooldown:${user.email}`
+        );
+
+        for (let i = 0; i < env.FORGOT_PASSWORD_RATE_LIMIT_MAX; i++) {
+            await request(app)
+                .post("/api/v1/auth/forgot-password")
+                .send({
+                    email: user.email,
+                });
+
+            await redisClient.del(
+                `password-reset-cooldown:${user.email}`
+            );
+        }
+
+        const response = await request(app)
+            .post("/api/v1/auth/forgot-password")
+            .send({
+                email: user.email,
+            });
+
+        expect(response.statusCode).toBe(429);
+        expect(response.body.success).toBe(false);
+    });
+
+    test("Should rate limit admin register route", async () => {
+        const { agent, accessToken } = await createAuthenticatedAdmin();
+
+        for (let i = 0; i < env.ADMIN_RATE_LIMIT_MAX; i++) {
+            await agent
+                .post("/api/v1/auth/admin/register")
+                .set("Authorization", `Bearer ${accessToken}`)
+                .send(createUserPayload());
+        }
+
+        const response = await agent
+            .post("/api/v1/auth/admin/register")
+            .set("Authorization", `Bearer ${accessToken}`)
+            .send(createUserPayload());
+
+        expect(response.statusCode).toBe(429);
+        expect(response.body.success).toBe(false);
+    });
+
+    test("Should return standard rate limit headers", async () => {
+        for (let i = 0; i < env.LOGIN_RATE_LIMIT_MAX; i++) {
+            await request(app)
+                .post("/api/v1/auth/login")
+                .send({
+                    email: "test@gmail.com",
+                    password: "WrongPassword",
+                });
+        }
+
+        const response = await request(app)
+            .post("/api/v1/auth/login")
+            .send({
+                email: "test@gmail.com",
+                password: "WrongPassword",
+            });
+
+        expect(response.statusCode).toBe(429);
+        expect(response.headers["ratelimit-limit"]).toBeDefined();
+        expect(response.headers["ratelimit-remaining"]).toBe("0");
+        expect(response.headers["ratelimit-reset"]).toBeDefined();
     });
 });

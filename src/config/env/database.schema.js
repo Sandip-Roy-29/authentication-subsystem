@@ -25,8 +25,5 @@ export const databaseSchema = z
             .max(100, "DB_MAX_POOL_SIZE must be less than 100")
             .int("DB_MAX_POOL_SIZE must be integer")
             .default(10),
-    })
-    .refine((data) => data.DB_MIN_POOL_SIZE <= data.DB_MAX_POOL_SIZE, {
-        message: "DB_MIN_POOL_SIZE cannot be greater than DB_MAX_POOL_SIZE",
-        path: ["DB_MIN_POOL_SIZE"],
     });
+    

@@ -37,7 +37,7 @@ export const verificationEmailController = async (req, res) => {
     await redisClient.del(`email-verification:${email}`);
     await redisClient.del(`email-verification-cooldown:${email}`);
 
-    const { user, accessToken, refreshToken } = await register({
+    const { userResponse, accessToken, refreshToken } = await register({
         name: data.name,
         email: data.email,
         password: data.password,
@@ -49,10 +49,10 @@ export const verificationEmailController = async (req, res) => {
     return res.status(201).json(
         ApiResponse.created({
             data: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
+                id: userResponse.id,
+                name: userResponse.name,
+                email: userResponse.email,
+                role: userResponse.role,
                 accessToken: accessToken,
             },
             message: "User registered successfully",
@@ -64,7 +64,7 @@ export const verificationEmailController = async (req, res) => {
 export const resendVerificationEmailController = async (req, res) => {
     const { email } = req.body;
 
-    await resendVerificationEmail({ email });
+    await resendVerificationEmail(email);
 
     return res.status(200).json(
         ApiResponse.success({
@@ -113,7 +113,7 @@ export const loginController = async (req, res) => {
     return res.status(200).json(
         ApiResponse.success({
             data: {
-                id: userResponse._id,
+                id: userResponse.id,
                 name: userResponse.name,
                 email: userResponse.email,
                 role: userResponse.role,

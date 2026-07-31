@@ -10,6 +10,17 @@ jobs:
         runs-on: ubuntu-latest
 
         services:
+            mongodb:
+              image: mongo:8
+              ports:
+                - 27017:27017
+
+              options: >-
+                --health-cmd="mongosh --eval 'db.adminCommand({ ping: 1 })'"
+                --health-interval=10s
+                --health-timeout=5s
+                --health-retries=5
+
             redis:
                 image: redis:8
                 ports:
@@ -43,7 +54,7 @@ jobs:
                 NODE_ENV=test
                 PORT=5000
 
-                MONGODB_URI=${{ secrets.MONGODB_URI }}
+                MONGODB_URI=mongodb://localhost:27017/auth-test
 
                 DB_MIN_POOL_SIZE=2
                 DB_MAX_POOL_SIZE=5
@@ -97,26 +108,8 @@ jobs:
                 FRONTEND_URL=http://localhost:5173
                 EOF
             
-            - name: Verify .env.test
-              run: |
-                if [ -f .env.test ]; then
-                echo ".env.test created successfully"
-                else
-                echo ".env.test not found"
-                exit 1
-                fi
-
-            - name: Check MongoDB URI
-              env:
-                MONGODB_URI: ${{ secrets.MONGODB_URI }}
-              run: |
-                if [ -z "$MONGODB_URI" ]; then
-                echo "MONGODB_URI secret is missing"
-                exit 1
-                fi
-
             - name: Run ESLint
               run: npm run lint
 
             - name: Run Tests
-              run: npm test
+              run: npm test -- --runInBand

@@ -5,7 +5,6 @@ import { beforeAll, afterAll, afterEach, jest } from "@jest/globals";
 import redisClient from "#infra/redis/redis.client.js";
 
 // Models
-import { User } from "#modules/user/models/user.model.js";
 import transporter from "#infra/mail/transporter.js";
 
 jest.setTimeout(60000);
@@ -36,6 +35,11 @@ afterAll(async () => {
 }, 70000);
 
 afterEach(async () => {
-    await User.deleteMany({});
+    for (const collection of Object.values(
+        mongoose.connection.collections
+    )) {
+        await collection.deleteMany({});
+    }
+
     await redisClient.flushDb();
 });

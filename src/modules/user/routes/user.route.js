@@ -1,7 +1,6 @@
 import express from "express";
-import { adminRateLimiter } from "../../auth/rateLimiter.js";
-import { authorize, verifyAccessToken } from "../../auth/middlewares";
-import { validateMiddleware } from "#shared/middlewares";
+import { authorize, verifyAccessToken } from "../../auth/middlewares/index.js";
+import { validateMiddleware } from "#shared/middlewares/index.js";
 import {
     deleteUserController,
     getUsersController,
@@ -9,31 +8,37 @@ import {
 } from "../controllers/user.controller.js";
 import { updateRoleSchema } from "../validators/user.validation.js";
 
-const router = express.Router();
+export default function createUserRouter(rateLimiters) {
+    const {
+        adminRateLimiter,
+    } = rateLimiters;
 
-router.get(
-    "/",
-    verifyAccessToken,
-    authorize("admin"),
-    adminRateLimiter,
-    getUsersController
-);
+    const router = express.Router();
 
-router.delete(
-    "/:userId",
-    verifyAccessToken,
-    authorize("admin"),
-    adminRateLimiter,
-    deleteUserController
-);
+    router.get(
+        "/",
+        verifyAccessToken,
+        authorize("admin"),
+        adminRateLimiter,
+        getUsersController
+    );
 
-router.patch(
-    "/:userId/role",
-    verifyAccessToken,
-    authorize("admin"),
-    adminRateLimiter,
-    validateMiddleware(updateRoleSchema),
-    updateRoleController
-);
+    router.delete(
+        "/:userId",
+        verifyAccessToken,
+        authorize("admin"),
+        adminRateLimiter,
+        deleteUserController
+    );
 
-export default router;
+    router.patch(
+        "/:userId/role",
+        verifyAccessToken,
+        authorize("admin"),
+        adminRateLimiter,
+        validateMiddleware(updateRoleSchema),
+        updateRoleController
+    );
+
+    return router;
+}

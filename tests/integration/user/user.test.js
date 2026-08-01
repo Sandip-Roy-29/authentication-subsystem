@@ -1,11 +1,11 @@
 import request from "supertest";
-import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
 
 import { User } from "#modules/user/models/user.model.js";
 
 import { createAuthenticatedAdmin } from "../../helper/createAuthenticatedAdmin.helper.js";
 import { createAuthenticatedUser } from "../../helper/createAuthenticatedUser.helper.js";
+import app from "../../helper/createTestApp.helper.js";
 
 describe("User routes", () => {
     // ===========================

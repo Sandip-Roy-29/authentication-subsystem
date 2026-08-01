@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import env from "#env";
-import { AppError } from "#shared/utils";
+import { AppError } from "#shared/utils/index.js";
 import { User } from "../../user/models/user.model.js";
 
 const verifyRefreshToken = async (req, _, next) => {

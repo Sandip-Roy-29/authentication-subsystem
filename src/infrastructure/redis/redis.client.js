@@ -1,25 +1,21 @@
 import { createClient } from "redis";
 import env from "#env";
-import { logger } from "#shared/utils";
+import { logger } from "#shared/utils/index.js";
 
 const redisClient = createClient({
     url: env.REDIS_URL,
 });
 
 redisClient.on("error", (err) => {
-    logger.error("Redis error: ", err);
+    logger.error({ err }, "Redis error");
 });
 
 if (process.env.NODE_ENV === "test") {
     redisClient.connect().catch((err) => {
         logger.warn(
-            "Redis connection warning during initialization (this is ok, it will reconnect):",
-            err.message
+            { err },
+            "Redis connection warning during test initialization"
         );
-    });
-} else {
-    redisClient.connect().catch((err) => {
-        logger.error("Failed to connect Redis client:", err);
     });
 }
 

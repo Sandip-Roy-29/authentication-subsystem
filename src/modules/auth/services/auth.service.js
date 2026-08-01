@@ -1,5 +1,5 @@
 import { User } from "../../user/models/user.model.js";
-import { AppError, generateOtp } from "#shared/utils";
+import { AppError, generateOtp } from "#shared/utils/index.js";
 import { generateAccessToken } from "../utils/generateTokens.util.js";
 import { sendOtpEmail } from "../utils/sendOtpEmail.util.js";
 import redisClient from "#infra/redis/redis.client.js";

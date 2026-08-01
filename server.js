@@ -1,66 +1,82 @@
-import app from "./src/app.js";
 import env from "#env";
-import transporter from "#infra/mail/transporter.js";
 import redisClient from "#infra/redis/redis.client.js";
-
-import connectDB from "#infra/database/connectDB.js";
 import disconnectDB from "#infra/database/disconnectDB.js";
-
-import { logger } from "#shared/utils";
+import { logger } from "#shared/utils/index.js";
+import bootstrap from "#bootstrap";
+import createApplication from "./src/composition/createApplication.js";
 
 let httpServer;
+let isShuttingDown = false;
 
-const graceFullShutdown = async (signal) => {
+const gracefulShutdown = async (signal) => {
+    if (isShuttingDown) return;
+    isShuttingDown = true;
+
+    logger.info(`${signal} received. Starting graceful shutdown`);
+
+    // Force shutdown after 10 seconds
+    const forceShutdownTimer = setTimeout(() => {
+        logger.error("Graceful shutdown timed out. Forcing exit.");
+        process.exit(1);
+    }, 10_000);
+
     try {
-        logger.info(`${signal} received. Starting gracefull shutdown`);
-
         if (httpServer) {
-            httpServer.close(() => {
-                logger.info("HTTP server closed");
+            await new Promise((resolve, reject) => {
+                httpServer.close((err) => {
+                    if (err) return reject(err);
+
+                    logger.info("HTTP server closed");
+                    resolve();
+                });
             });
         }
 
-        await redisClient.quit();
+        if (redisClient.isOpen) {
+            await redisClient.quit();
+            logger.info("Redis disconnected");
+        }
+
         await disconnectDB();
 
-        logger.info("Database disconnected");
+        clearTimeout(forceShutdownTimer);
 
-        process.exit(0);
+        logger.info("Graceful shutdown completed");
+
+        process.exitCode = 0;
     } catch (error) {
-        logger.fatal({ err: error }, "Error during gracefull shutdown");
+        clearTimeout(forceShutdownTimer);
 
-        process.exit(1);
+        logger.fatal({ err: error }, "Error occurred during graceful shutdown");
+
+        process.exitCode = 1;
     }
 };
 
-process.on("unhandledRejection", (error) => {
-    logger.error({ err: error }, "Unhandled rejection");
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 
+process.on("unhandledRejection", (error) => {
+    logger.fatal({ err: error }, "Unhandled promise rejection");
     process.exit(1);
 });
 
 process.on("uncaughtException", (error) => {
-    logger.error({ err: error }, "Uncaught exception");
-
+    logger.fatal({ err: error }, "Uncaught exception");
     process.exit(1);
 });
 
-process.on("SIGINT", () => graceFullShutdown("SIGINT"));
-
-process.on("SIGTERM", () => graceFullShutdown("SIGTERM"));
-
 const startServer = async () => {
     try {
-        await connectDB();
-        await redisClient.connect();
-        await transporter.verify();
+        await bootstrap();
+
+        const app = createApplication();
 
         httpServer = app.listen(env.PORT, () => {
             logger.info(`App listening on port ${env.PORT}`);
         });
     } catch (error) {
-        logger.error({ err: error }, "Server startup failed");
-
+        logger.fatal({ err: error }, "Server startup failed");
         process.exit(1);
     }
 };

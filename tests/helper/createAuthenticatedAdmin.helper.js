@@ -1,5 +1,5 @@
 import { User } from "#modules/user/models/user.model.js";
-import { loginUser } from "./loginUser.helper";
+import { loginUser } from "./loginUser.helper.js";
 
 export const createAuthenticatedAdmin = async () => {
     const admin = new User({

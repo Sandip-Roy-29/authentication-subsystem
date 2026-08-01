@@ -1,4 +1,4 @@
-import { AppError } from "#shared/utils";
+import { AppError } from "#shared/utils/index.js";
 
 export const authorize = (...allowedRoles) => {
     return (req, res, next) => {

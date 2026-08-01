@@ -1,4 +1,4 @@
-import { logger } from "../utils";
+import { logger } from "../utils/index.js";
 
 const requestLoggerMiddleware = (req, res, next) => {
     const start = Date.now();

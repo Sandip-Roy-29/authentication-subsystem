@@ -1,7 +1,6 @@
 import request from "supertest";
 import { describe, test, expect, beforeEach } from "@jest/globals";
 
-import app from "../../../src/app.js";
 import env from "#env";
 import redisClient from "#infra/redis/redis.client.js";
 
@@ -9,6 +8,8 @@ import { createUserPayload } from "../../helper/createUserPayload.helper.js";
 import { createPendingVerification } from "../../helper/createPendingVerification.helper.js";
 import { createAuthenticatedUser } from "../../helper/createAuthenticatedUser.helper.js";
 import { createAuthenticatedAdmin } from "../../helper/createAuthenticatedAdmin.helper.js";
+import app from "../../helper/createTestApp.helper.js";
+
 
 describe("Rate limiter", () => {
     beforeEach(async () => {

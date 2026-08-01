@@ -1,7 +1,8 @@
 import request from "supertest";
-import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
 import { createAuthenticatedUser } from "../../helper/createAuthenticatedUser.helper.js";
+import app from "../../helper/createTestApp.helper.js";
+
 
 describe("Protected routes", () => {
     test("Should access /me with valid token", async () => {

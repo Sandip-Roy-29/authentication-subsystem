@@ -1,5 +1,5 @@
 import request from "supertest";
-import app from "../../src/app.js";
+import app from "./createTestApp.helper.js";
 
 export const loginUser = async ({ email, password }) => {
     const agent = request.agent(app);

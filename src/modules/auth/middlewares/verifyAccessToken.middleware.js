@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import env from "#env";
 import redisClient from "#infra/redis/redis.client.js";
-import { AppError } from "#shared/utils";
+import { AppError } from "#shared/utils/index.js";
 
 const verifyAccessToken = async (req, _, next) => {
     try {

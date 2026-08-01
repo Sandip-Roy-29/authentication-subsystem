@@ -1,4 +1,4 @@
-import { logger } from "../utils";
+import { logger } from "../utils/index.js";
 import env from "#env";
 
 const errorMiddleware = (error, req, res, next) => {

@@ -1,5 +1,5 @@
 import { User } from "../models/user.model.js";
-import { AppError } from "#shared/utils";
+import { AppError } from "#shared/utils/index.js";
 
 export const getUsers = async () => {
     return await User.find().select("-refreshToken.expiresAt");

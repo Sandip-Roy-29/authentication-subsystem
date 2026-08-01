@@ -13,7 +13,7 @@ import {
     verifyEmailOtp,
     resendVerificationEmail,
 } from "../services/emailVerification.service.js";
-import { ApiResponse } from "#shared/utils";
+import { ApiResponse } from "#shared/utils/index.js";
 import { clearAuthCookies, setAuthCookies } from "../utils/cookie.util.js";
 
 export const registerController = async (req, res) => {

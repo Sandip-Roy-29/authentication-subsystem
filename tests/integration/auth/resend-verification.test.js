@@ -1,11 +1,12 @@
 import request from "supertest";
-import app from "../../../src/app.js";
 import { describe, test, expect, beforeEach } from "@jest/globals";
 
 import redisClient from "#infra/redis/redis.client.js";
 
 import { sendMailMock } from "../../mocks/transporter.mock.js";
 import { createPendingVerification } from "../../helper/createPendingVerification.helper.js";
+import app from "../../helper/createTestApp.helper.js";
+
 
 describe("Resend verification route", () => {
     beforeEach(() => {

@@ -1,6 +1,5 @@
 // Configs
 import request from "supertest";
-import app from "../../../src/app.js";
 import { describe, test, expect, beforeEach } from "@jest/globals";
 
 // Helpers
@@ -8,6 +7,8 @@ import { createAuthenticatedUser } from "../../helper/createAuthenticatedUser.he
 import { createUserPayload } from "../../helper/createUserPayload.helper.js";
 import { User } from "#modules/user/models/user.model.js";
 import { sendMailMock } from "../../mocks/transporter.mock.js";
+import app from "../../helper/createTestApp.helper.js";
+
 
 describe("Register route", () => {
     beforeEach(() => {

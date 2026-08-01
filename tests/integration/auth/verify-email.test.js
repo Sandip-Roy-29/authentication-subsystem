@@ -1,5 +1,4 @@
 import request from "supertest";
-import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
 
 import redisClient from "#infra/redis/redis.client.js";
@@ -8,6 +7,7 @@ import { User } from "#modules/user/models/user.model.js";
 import { requestRegistration } from "../../helper/requestRegistration.helper.js";
 import { getEmailVerificationOtp } from "../../helper/getEmailVerificationOtp.helper.js";
 import { verifyEmail } from "../../helper/verifyEmail.helper.js";
+import app from "../../helper/createTestApp.helper.js";
 
 describe("Verify email route", () => {
     test("Should verify email and create user", async () => {

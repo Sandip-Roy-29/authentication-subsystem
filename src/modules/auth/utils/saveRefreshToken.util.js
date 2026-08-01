@@ -1,5 +1,3 @@
-// auth/utils/saveRefreshToken.util.js
-
 import { generateRefreshToken } from "./generateTokens.util.js";
 
 const REFRESH_TOKEN_EXPIRY = 7 * 24 * 60 * 60 * 1000;

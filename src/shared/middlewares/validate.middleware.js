@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-import { AppError } from "../utils";
+import { AppError } from "../utils/index.js";
 
 const validateMiddleware = (schema) => {
     return async (req, res, next) => {

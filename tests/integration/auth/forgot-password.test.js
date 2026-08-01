@@ -1,10 +1,10 @@
 import request from "supertest";
-import app from "../../../src/app.js";
 import { describe, test, expect, beforeEach } from "@jest/globals";
 
 import redisClient from "#infra/redis/redis.client.js";
 import { sendMailMock } from "../../mocks/transporter.mock.js";
 import { createUser } from "../../helper/createUser.helper.js";
+import app from "../../helper/createTestApp.helper.js";
 
 describe("Forgot password route", () => {
     beforeEach(() => {

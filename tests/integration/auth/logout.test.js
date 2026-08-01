@@ -1,10 +1,10 @@
 import request from "supertest";
-import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
 
 import { User } from "#modules/user/models/user.model.js";
 import redisClient from "#infra/redis/redis.client.js";
 import { createAuthenticatedUser } from "../../helper/createAuthenticatedUser.helper.js";
+import app from "../../helper/createTestApp.helper.js";
 
 describe("Logout route", () => {
     test("Should logout successfully", async () => {

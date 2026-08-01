@@ -24,7 +24,9 @@
         "#infra/*": "./src/infrastructure/*",
         "#modules/*": "./src/modules/*",
         "#shared/*": "./src/shared/*",
-        "#routes/*": "./src/routes/*"
+        "#routes/*": "./src/routes/*",
+        "#bootstrap": "./src/bootstraps/index.js",
+        "#composition": "./src/composition/createApplication.js"
     },
     "dependencies": {
         "bcrypt": "^6.0.0",

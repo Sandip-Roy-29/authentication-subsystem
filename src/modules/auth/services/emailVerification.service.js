@@ -1,6 +1,6 @@
-import { generateOtp, AppError } from "#shared/utils";
+import { generateOtp, AppError } from "#shared/utils/index.js";
 import redisClient from "#infra/redis/redis.client.js";
-import { sendOtpEmail } from "../utils/sendOtpEmail.util";
+import { sendOtpEmail } from "../utils/sendOtpEmail.util.js";
 import { User } from "#modules/user/models/user.model.js";
 
 export const sendVerificationEmail = async ({

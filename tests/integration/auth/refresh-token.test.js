@@ -1,9 +1,9 @@
 import request from "supertest";
-import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
 
 import { createAuthenticatedUser } from "../../helper/createAuthenticatedUser.helper.js";
 import { User } from "#modules/user/models/user.model.js";
+import app from "../../helper/createTestApp.helper.js";
 
 describe("Refresh token route", () => {
     test("Should refresh access token", async () => {

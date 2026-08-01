@@ -1,9 +1,8 @@
 import request from "supertest";
 import { describe, test, expect, beforeEach, jest } from "@jest/globals";
-
-import app from "../../../src/app.js";
 import { User } from "#modules/user/models/user.model.js";
 import googleClient from "#infra/passport/google.client.js";
+import app from "../../helper/createTestApp.helper";
 
 describe("Google login route", () => {
     beforeEach(() => {

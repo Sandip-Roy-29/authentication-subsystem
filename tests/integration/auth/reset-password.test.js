@@ -1,5 +1,4 @@
 import request from "supertest";
-import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
 
 import redisClient from "#infra/redis/redis.client.js";
@@ -8,6 +7,7 @@ import { User } from "#modules/user/models/user.model.js";
 import { createUser } from "../../helper/createUser.helper.js";
 import { createPasswordReset } from "../../helper/createPasswordReset.helper.js";
 import { loginUser } from "../../helper/loginUser.helper.js";
+import app from "../../helper/createTestApp.helper.js";
 
 describe("Reset password route", () => {
     test("Should reset password successfully", async () => {

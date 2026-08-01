@@ -3,7 +3,7 @@ import {
     updateUserRole,
     deleteUser,
 } from "../services/user.service.js";
-import { ApiResponse, AppError } from "#shared/utils";
+import { ApiResponse, AppError } from "#shared/utils/index.js";
 
 export const getUsersController = async (req, res) => {
     const users = await getUsers();

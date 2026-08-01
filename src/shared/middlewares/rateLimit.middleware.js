@@ -2,14 +2,14 @@ import rateLimit from "express-rate-limit";
 import { ipKeyGenerator } from "express-rate-limit";
 import redisClient from "#infra/redis/redis.client.js";
 import RedisStore from "rate-limit-redis";
-import { AppError, logger } from "../utils";
+import { AppError, logger } from "../utils/index.js";
 
-export const createRateLimiter = ({ prefix, ...options }) => {
+export const createRateLimiter = ({ client, prefix, ...options }) => {
     return rateLimit({
         ...options,
         store: new RedisStore({
             sendCommand: (...args) => redisClient.sendCommand(args),
-            client: redisClient,
+            client,
         }),
         standardHeaders: true,
         legacyHeaders: false,

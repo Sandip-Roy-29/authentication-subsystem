@@ -1,5 +1,4 @@
 import request from "supertest";
-import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
 
 import { createUserPayload } from "../../helper/createUserPayload.helper.js";
@@ -7,6 +6,7 @@ import { sendMailMock } from "../../mocks/transporter.mock.js";
 import redisClient from "#infra/redis/redis.client.js";
 import { createAuthenticatedAdmin } from "../../helper/createAuthenticatedAdmin.helper.js";
 import { createAuthenticatedUser } from "../../helper/createAuthenticatedUser.helper.js";
+import app from "../../helper/createTestApp.helper.js";
 
 describe("Admin register route", () => {
     test("Should allow an admin to create an admin registration request", async () => {

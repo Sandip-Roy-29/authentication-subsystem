@@ -1,6 +1,6 @@
 import request from "supertest";
-import app from "../../src/app.js";
 import { createUserPayload } from "./createUserPayload.helper.js";
+import app from "./createTestApp.helper.js";
 
 export const requestRegistration = async (role = "user") => {
     const agent = request.agent(app);

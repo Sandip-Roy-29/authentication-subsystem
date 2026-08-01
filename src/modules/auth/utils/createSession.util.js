@@ -1,6 +1,6 @@
-import { buildUserResponse } from "./buildUserResponse.util";
-import { generateAccessToken } from "./generateTokens.util";
-import { saveRefreshToken } from "./saveRefreshToken.util";
+import { buildUserResponse } from "./buildUserResponse.util.js";
+import { generateAccessToken } from "./generateTokens.util.js";
+import { saveRefreshToken } from "./saveRefreshToken.util.js";
 
 export const createSession = async (user) => {
     const accessToken = generateAccessToken(user);

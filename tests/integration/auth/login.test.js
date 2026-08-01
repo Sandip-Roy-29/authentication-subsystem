@@ -1,12 +1,10 @@
-// Configs
 import request from "supertest";
-import app from "../../../src/app.js";
 import { describe, test, expect } from "@jest/globals";
 
-// Helpers
 import { createAuthenticatedUser } from "../../helper/createAuthenticatedUser.helper.js";
 import { loginUser } from "../../helper/loginUser.helper.js";
 import { User } from "#modules/user/models/user.model.js";
+import app from "../../helper/createTestApp.helper.js";
 
 describe("Login route", () => {
     test("Should login a verified user successfully", async () => {

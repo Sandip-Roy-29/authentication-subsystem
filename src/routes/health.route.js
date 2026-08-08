@@ -4,14 +4,20 @@ import mongoose from "mongoose";
 const router = express.Router();
 
 router.get("/", (req, res) => {
-    const dbState = mongoose.connection.readyState;
+    const dbConnected = mongoose.connection.readyState === 1;
 
-    const dbStatus = dbState === 1 ? "Connected" : "Disconnected";
+    if (!dbConnected) {
+        return res.status(503).json({
+            success: false,
+            server: "running",
+            database: "Disconnected",
+        });
+    }
 
     res.status(200).json({
         success: true,
         server: "running",
-        database: dbStatus,
+        database: "Connected",
     });
 });
 

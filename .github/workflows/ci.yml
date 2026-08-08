@@ -22,6 +22,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/node-setup
 
       - name: Run ESLint
@@ -56,6 +57,7 @@ jobs:
       NODE_ENV: test
 
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/node-setup
 
       - uses: ./.github/actions/prepare-test-env
@@ -83,6 +85,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+      
       - uses: ./.github/actions/node-setup
 
       - uses: ./.github/actions/dependency-audit

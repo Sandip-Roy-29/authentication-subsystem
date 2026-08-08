@@ -1,17 +1,19 @@
-import bootstrapDatabase from "./database.bootstrap.js";
-import bootstrapRedis from "./redis.bootstrap.js";
-import bootstrapMail from "./mail.bootstrap.js";
+import criticalBootstrap from "./critical/index.js";
+import optionalBootstrap from "./optional/index.js";
 import { logger } from "#shared/utils/index.js";
 
 export default async function bootstrap() {
     try {
-        await bootstrapDatabase();
-        await bootstrapRedis();
-        await bootstrapMail();
+        await criticalBootstrap();
+
+        await optionalBootstrap();
 
         logger.info("Application bootstrap completed");
     } catch (error) {
-        logger.fatal({ err: error }, "Application bootstrap failed");
+        logger.fatal(
+            { err: error },
+            "Application bootstrap failed"
+        );
 
         throw error;
     }

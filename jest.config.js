@@ -11,5 +11,9 @@ export default {
         "^#modules/(.*)$": "<rootDir>/src/modules/$1",
         "^#shared/(.*)$": "<rootDir>/src/shared/$1",
         "^#routes/(.*)$": "<rootDir>/src/routes/$1",
+
+        "^#env$": "<rootDir>/src/config/env/index.js",
+        "^#bootstrap$": "<rootDir>/src/bootstraps/index.js",
+        "^#composition$": "<rootDir>/src/composition/createApplication.js",
     },
 };

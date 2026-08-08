@@ -67,6 +67,14 @@ jobs:
           smtp-password: ${{ secrets.SMTP_PASSWORD }}
           google-client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
+      
+      - name: Debug env file (temporary)
+        run: |
+          echo "Line count:"
+          wc -l .env.test
+          echo "Checking for secret keys (values masked by GH):"
+          grep -E "^(ACCESS_TOKEN_SECRET|REFRESH_TOKEN_SECRET|SMTP_PASSWORD|GOOGLE_CLIENT_SECRET|FRONTEND_URL|REDIS_HOST)=" .env.test
+
       - name: Run Tests
         run: npm test -- --runInBand --coverage
 
@@ -86,7 +94,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: ./.github/actions/node-setup
 
       - uses: ./.github/actions/dependency-audit

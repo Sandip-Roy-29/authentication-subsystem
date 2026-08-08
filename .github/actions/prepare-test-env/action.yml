@@ -30,6 +30,7 @@ runs:
     - name: Inject secrets
       shell: bash
       run: |
+        echo "" >> .env.test
         cat <<EOF >> .env.test
         ACCESS_TOKEN_SECRET=${{ inputs.access-token-secret }}
         REFRESH_TOKEN_SECRET=${{ inputs.refresh-token-secret }}

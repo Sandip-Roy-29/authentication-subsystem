@@ -1,0 +1,79 @@
+services:
+
+  app-test:
+    image: authentication-subsystem:test
+
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+
+    container_name: authentication-subsystem-test
+
+    env_file:
+      - .env.test
+
+    environment:
+      NODE_ENV: test
+
+      MONGODB_URI: mongodb://mongo-test:27017/auth-test
+      REDIS_HOST: redis-test
+      REDIS_PORT: 6379
+
+    depends_on:
+      mongo-test:
+        condition: service_healthy
+
+      redis-test:
+        condition: service_healthy
+
+
+    command:
+      npm test -- --runInBand
+
+
+  redis-test:
+    image: redis:8.0-alpine
+
+    container_name: auth-redis-test
+
+    tmpfs:
+      - /data
+
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "ping"
+        ]
+
+      interval: 2s
+      timeout: 2s
+      retries: 10
+      start_period: 3s
+
+
+
+  mongo-test:
+    image: mongo:4.4
+
+    container_name: auth-mongo-test
+
+    tmpfs:
+      - /data/db
+
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mongo",
+          "--eval",
+          "db.adminCommand({ ping: 1 })"
+        ]
+
+      interval: 2s
+      timeout: 2s
+      retries: 5
+      start_period: 5s

@@ -1,0 +1,38 @@
+name: Prepare Test Environment
+
+description: Creates .env.test for CI by combining the example file with GitHub Secrets.
+
+inputs:
+  access-token-secret:
+    description: JWT access token secret
+    required: true
+
+  refresh-token-secret:
+    description: JWT refresh token secret
+    required: true
+
+  smtp-password:
+    description: SMTP password
+    required: true
+
+  google-client-secret:
+    description: Google OAuth client secret
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Copy template
+      shell: bash
+      run: cp .env.test.example .env.test
+
+    - name: Inject secrets
+      shell: bash
+      run: |
+        cat <<EOF >> .env.test
+        ACCESS_TOKEN_SECRET=${{ inputs.access-token-secret }}
+        REFRESH_TOKEN_SECRET=${{ inputs.refresh-token-secret }}
+        SMTP_PASSWORD=${{ inputs.smtp-password }}
+        GOOGLE_CLIENT_SECRET=${{ inputs.google-client-secret }}
+        EOF

@@ -1,0 +1,79 @@
+name: Docker Build & Smoke Test
+
+description: Build the Docker image, start required containers, and verify the application health endpoint.
+
+inputs:
+  image-name:
+    description: Docker image name
+    required: true
+
+  image-tag:
+    description: Docker image tag
+    required: true
+
+  env-file:
+    description: Environment file used to start the application container
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Setup Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Create Docker network
+      shell: bash
+      run: docker network create auth-network
+
+    - name: Start MongoDB
+      shell: bash
+      run: |
+        docker run -d \
+          --name auth-mongo \
+          --network auth-network \
+          mongo:8.0
+
+    - name: Start Redis
+      shell: bash
+      run: |
+        docker run -d \
+          --name auth-redis \
+          --network auth-network \
+          redis:8.0
+
+    - name: Build Docker image
+      shell: bash
+      run: |
+        docker buildx build \
+          --load \
+          --cache-from type=gha \
+          --cache-to type=gha,mode=max \
+          -t ${{ inputs.image-name }}:${{ inputs.image-tag }} .
+
+    - name: Start application container
+      shell: bash
+      run: |
+        docker run -d \
+          --name authentication-subsystem \
+          --network auth-network \
+          --env-file ${{ inputs.env-file }} \
+          -p 8000:8000 \
+          ${{ inputs.image-name }}:${{ inputs.image-tag }}
+
+    - name: Wait for application health
+      shell: bash
+      run: |
+        for i in {1..15}; do
+          if curl --fail http://localhost:8000/health; then
+            echo "Application is healthy."
+            exit 0
+          fi
+
+          echo "Waiting for application..."
+          sleep 2
+        done
+
+        echo "Application failed to become healthy."
+        docker logs authentication-subsystem
+        exit 1

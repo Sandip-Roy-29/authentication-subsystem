@@ -1,9 +1,18 @@
 import { z } from "zod";
 
 export const redisSchema = z.object({
-    REDIS_URL: z
+    REDIS_HOST: z
         .string({
-            required_error: "REDIS_URL is required",
+            required_error: "REDIS_HOST is required",
+        }),
+    REDIS_PORT: z.coerce
+        .number({
+            required_error: "REDIS_PORT is required",
         })
-        .url("REDIS_URL must be a valid URL"),
+        .default(6379),
+    REDIS_PASSWORD: z
+        .string({
+            required_error: "REDIS_PASSWORD is required",
+        })
+        .optional()
 });

@@ -1,0 +1,18 @@
+name: Dependency Audit
+
+description: Scan Node.js dependencies for known vulnerabilities.
+
+inputs:
+  audit-level:
+    description: Minimum vulnerability level that should fail the build.
+    required: false
+    default: high
+
+runs:
+  using: composite
+
+  steps:
+    - name: Run npm audit
+      shell: bash
+      run: |
+        npm audit --audit-level=${{ inputs.audit-level }}

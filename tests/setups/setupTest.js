@@ -35,11 +35,11 @@ afterAll(async () => {
 }, 70000);
 
 afterEach(async () => {
-    for (const collection of Object.values(
-        mongoose.connection.collections
-    )) {
+    for (const collection of Object.values(mongoose.connection.collections)) {
         await collection.deleteMany({});
     }
 
-    await redisClient.flushDb();
+    if (redisClient.isOpen) {
+        await redisClient.flushDb();
+    }
 });

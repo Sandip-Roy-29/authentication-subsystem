@@ -16,9 +16,10 @@ ENV NODE_ENV=production
 
 COPY --from=dependencies /app/node_modules ./node_modules
 
-COPY --chown=node:node . .
-
-RUN rm -f package-lock.json
+COPY --chown=node:node package.json ./
+COPY --chown=node:node server.js ./
+COPY --chown=node:node src ./src
+COPY --chown=node:node scripts ./scripts
 
 EXPOSE 8000
 

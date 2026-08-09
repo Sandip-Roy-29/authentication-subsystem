@@ -18,6 +18,8 @@ COPY --from=dependencies /app/node_modules ./node_modules
 
 COPY --chown=node:node . .
 
+RUN rm -f package-lock.json
+
 EXPOSE 8000
 
 USER node

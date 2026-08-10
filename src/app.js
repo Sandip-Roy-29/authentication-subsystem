@@ -1,8 +1,10 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import swaggerUi from "swagger-ui-express";
 
 import healthRoute from "../src/routes/health.route.js";
 import meRoute from "#modules/user/routes/me.route.js";
+import openapiSpecification from "#docs/openapi.js";
 
 import {
     requestLoggerMiddleware,
@@ -21,6 +23,12 @@ export default function createApp({ authRouter, userRouter }) {
     app.use(cookieParser());
     
     app.set("trust proxy", 1);
+
+    app.use(
+        "/api-docs",
+        swaggerUi.serve,
+        swaggerUi.setup(openapiSpecification)
+    );
 
     app.use("/health", healthRoute);
     app.use("/api/v1/auth", authRouter);

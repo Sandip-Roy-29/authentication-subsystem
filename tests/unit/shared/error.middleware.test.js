@@ -75,8 +75,8 @@ describe("error.middleware", () => {
 
         const response = res.json.mock.calls[0][0];
 
-        expect(response.timeStamp).toBeDefined();
-        expect(new Date(response.timeStamp).toString()).not.toBe(
+        expect(response.timestamp).toBeDefined();
+        expect(new Date(response.timestamp).toString()).not.toBe(
             "Invalid Date"
         );
     });

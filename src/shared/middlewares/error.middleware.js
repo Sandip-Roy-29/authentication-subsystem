@@ -22,7 +22,7 @@ const errorMiddleware = (error, req, res, next) => {
         error: {
             type: error.name || "Error",
         },
-        timeStamp: new Date().toISOString(),
+        timestamp: new Date().toISOString(),
         requestId: req.requestId || null,
     };
 

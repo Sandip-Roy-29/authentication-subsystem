@@ -24,7 +24,7 @@ runs:
 
     - name: Create Docker network
       shell: bash
-      run: docker network create auth-network
+      run: docker network create crosslink-network
 
     - name: Start MongoDB
       shell: bash

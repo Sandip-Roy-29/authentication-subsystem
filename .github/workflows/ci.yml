@@ -102,11 +102,11 @@ jobs:
 
       - uses: ./.github/actions/docker-smoke-test
         with:
-          image-name: authentication-subsystem
+          image-name: crosslink
           image-tag: ${{ github.sha }}
           env-file: .env.smoke-test.example
 
       - uses: ./.github/actions/docker-security-scan
         with:
-          image-name: authentication-subsystem
+          image-name: crosslink
           image-tag: ${{ github.sha }}

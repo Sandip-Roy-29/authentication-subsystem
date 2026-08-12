@@ -1,12 +1,12 @@
 services:
   app:
-    image: authentication-subsystem:prod
+    image: crosslink:prod
 
     build:
       context: .
       dockerfile: Dockerfile
 
-    container_name: authentication-subsystem
+    container_name: crosslink
 
     restart: unless-stopped
 
@@ -36,7 +36,7 @@ services:
   redis:
     image: redis:8.0-alpine
 
-    container_name: auth-redis
+    container_name: crosslink-redis
 
     restart: unless-stopped
 

@@ -30,16 +30,16 @@ runs:
       shell: bash
       run: |
         docker run -d \
-          --name auth-mongo \
-          --network auth-network \
+          --name crosslink-mongo \
+          --network crosslink-network \
           mongo:8.0
 
     - name: Start Redis
       shell: bash
       run: |
         docker run -d \
-          --name auth-redis \
-          --network auth-network \
+          --name crosslink-redis \
+          --network crosslink-network \
           redis:8.0
 
     - name: Build Docker image
@@ -55,8 +55,8 @@ runs:
       shell: bash
       run: |
         docker run -d \
-          --name authentication-subsystem \
-          --network auth-network \
+          --name crosslink \
+          --network crosslink-network \
           --env-file ${{ inputs.env-file }} \
           -p 8000:8000 \
           ${{ inputs.image-name }}:${{ inputs.image-tag }}
@@ -75,5 +75,5 @@ runs:
         done
 
         echo "Application failed to become healthy."
-        docker logs authentication-subsystem
+        docker logs crosslink
         exit 1

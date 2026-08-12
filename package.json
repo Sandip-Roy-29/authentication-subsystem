@@ -1,7 +1,7 @@
 {
-    "name": "authentication-subsystem",
+    "name": "crosslink",
     "version": "1.0.0",
-    "description": "",
+    "description": "Cross-device control platform with a secure auth backbone",
     "main": "server.js",
     "scripts": {
         "start": "NODE_ENV=production node server.js",

@@ -14,7 +14,6 @@ const gracefulShutdown = async (signal) => {
 
     logger.info(`${signal} received. Starting graceful shutdown`);
 
-    // Force shutdown after 10 seconds
     const forceShutdownTimer = setTimeout(() => {
         logger.error("Graceful shutdown timed out. Forcing exit.");
         process.exit(1);

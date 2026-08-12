@@ -1,12 +1,12 @@
 services:
   app:
-    image: authentication-subsystem:dev
+    image: crosslink:dev
 
     build:
       context: .
       dockerfile: Dockerfile.dev
 
-    container_name: authentication-subsystem-dev
+    container_name: crosslink-dev
 
     ports:
       - "8000:8000"
@@ -39,7 +39,7 @@ services:
   redis:
     image: redis:8.0-alpine
 
-    container_name: auth-redis-dev
+    container_name: crosslink-redis-dev
 
     tmpfs:
       - /data

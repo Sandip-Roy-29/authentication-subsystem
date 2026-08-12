@@ -1,13 +1,13 @@
 services:
 
   app-test:
-    image: authentication-subsystem:test
+    image: crosslink:test
 
     build:
       context: .
       dockerfile: Dockerfile.test
 
-    container_name: authentication-subsystem-test
+    container_name: crosslink-test
 
     env_file:
       - .env.test
@@ -15,7 +15,7 @@ services:
     environment:
       NODE_ENV: test
 
-      MONGODB_URI: mongodb://mongo-test:27017/auth-test
+      MONGODB_URI: mongodb://mongo-test:27017/crosslink-test
       REDIS_HOST: redis-test
       REDIS_PORT: 6379
 
@@ -34,7 +34,7 @@ services:
   redis-test:
     image: redis:8.0-alpine
 
-    container_name: auth-redis-test
+    container_name: crosslink-redis-test
 
     tmpfs:
       - /data
@@ -58,7 +58,7 @@ services:
   mongo-test:
     image: mongo:4.4
 
-    container_name: auth-mongo-test
+    container_name: crosslink-mongo-test
 
     tmpfs:
       - /data/db

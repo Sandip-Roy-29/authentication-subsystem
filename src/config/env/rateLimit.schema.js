@@ -135,4 +135,45 @@ export const rateLimitSchema = z.object({
         })
         .positive("GOOGLE_RATE_LIMIT_MAX must be positive")
         .int("GOOGLE_RATE_LIMIT_MAX must be integer"),
+    DEVICE_REGISTER_RATE_LIMIT_WINDOW_MS: z.coerce
+        .number({
+            invalid_type_error:
+                "DEVICE_REGISTER_RATE_LIMIT_WINDOW_MS must be a valid number",
+        })
+        .positive("DEVICE_REGISTER_RATE_LIMIT_WINDOW_MS must be positive")
+        .int("DEVICE_REGISTER_RATE_LIMIT_WINDOW_MS must be integer"),
+    DEVICE_REGISTER_RATE_LIMIT_MAX: z.coerce
+        .number({
+            invalid_type_error:
+                "DEVICE_REGISTER_RATE_LIMIT_MAX must be a valid number",
+        })
+        .positive("DEVICE_REGISTER_RATE_LIMIT_MAX must be positive")
+        .int("DEVICE_REGISTER_RATE_LIMIT_MAX must be integer"),
+    DEVICE_LISTS_LIMIT_WINDOW_MS: z.coerce
+        .number({
+            invalid_type_error:
+                "DEVICE_LISTS_LIMIT_WINDOW_MS must be a valid number",
+        })
+        .positive("DEVICE_LISTS_LIMIT_WINDOW_MS must be positive")
+        .int("DEVICE_LISTS_LIMIT_WINDOW_MS must be integer"),
+    DEVICE_LISTS_LIMIT_MAX: z.coerce
+        .number({
+            invalid_type_error: "DEVICE_LISTS_LIMIT_MAX must be a valid number",
+        })
+        .positive("DEVICE_LISTS_LIMIT_MAX must be positive")
+        .int("DEVICE_LISTS_LIMIT_MAX must be integer"),
+    DEVICE_REVOKE_LIMIT_WINDOW_MS: z.coerce
+        .number({
+            invalid_type_error:
+                "DEVICE_REVOKE_LIMIT_WINDOW_MS must be a valid number",
+        })
+        .positive("DEVICE_REVOKE_LIMIT_WINDOW_MS must be positive")
+        .int("DEVICE_REVOKE_LIMIT_WINDOW_MS must be integer"),
+    DEVICE_REVOKE_LIMIT_MAX: z.coerce
+        .number({
+            invalid_type_error:
+                "DEVICE_REVOKE_LIMIT_MAX must be a valid number",
+        })
+        .positive("DEVICE_REVOKE_LIMIT_MAX must be positive")
+        .int("DEVICE_REVOKE_LIMIT_MAX must be integer"),
 });

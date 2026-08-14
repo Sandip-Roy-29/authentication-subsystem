@@ -14,7 +14,7 @@ import {
 
 import { verifyAccessToken } from "#modules/auth/middlewares/index.js";
 
-export default function createApp({ authRouter, userRouter }) {
+export default function createApp({ authRouter, userRouter, deviceRouter }) {
     const app = express();
 
     app.use(express.json());
@@ -34,6 +34,7 @@ export default function createApp({ authRouter, userRouter }) {
     app.use("/api/v1/auth", authRouter);
     app.use("/api/v1/me", verifyAccessToken, meRoute);
     app.use("/api/v1/users", userRouter);
+    app.use("/api/v1/devices", deviceRouter);
 
     app.use(errorMiddleware);
 

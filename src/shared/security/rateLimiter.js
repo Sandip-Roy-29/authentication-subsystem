@@ -65,5 +65,26 @@ export default function createRateLimiters(redisClient) {
             windowMs: env.GOOGLE_RATE_LIMIT_WINDOW_MS,
             max: env.GOOGLE_RATE_LIMIT_MAX,
         }),
+        
+        deviceRegisterRateLimiter: createRateLimiter({
+            client: redisClient,
+            prefix: "device-register",
+            windowMs: env.DEVICE_REGISTER_RATE_LIMIT_WINDOW_MS,
+            max: env.DEVICE_REGISTER_RATE_LIMIT_MAX,
+        }),
+        
+        deviceListsRateLimiter: createRateLimiter({
+            client: redisClient,
+            prefix: "device-lists",
+            windowMs: env.DEVICE_LISTS_LIMIT_WINDOW_MS,
+            max: env.DEVICE_LISTS_LIMIT_MAX,
+        }),
+        
+        deviceRevokeRateLimiter: createRateLimiter({
+            client: redisClient,
+            prefix: "device-revoke",
+            windowMs: env.DEVICE_REVOKE_LIMIT_WINDOW_MS,
+            max: env.DEVICE_REVOKE_LIMIT_MAX,
+        }),
     };
 }
